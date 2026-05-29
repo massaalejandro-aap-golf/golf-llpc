@@ -22,6 +22,7 @@ function resultBadge(r: SyncDetail['resultado']) {
 }
 
 type NormResult = { total: number; fixed: number; changes: { id: number; antes: string; despues: string }[] }
+type MigrResult = { creados: number; omitidos: number; total: number }
 
 export default function AagSyncClient({ initial }: { initial: SyncStatus }) {
   const [status,  setStatus]  = useState<SyncStatus>(initial)
@@ -32,6 +33,11 @@ export default function AagSyncClient({ initial }: { initial: SyncStatus }) {
   const [norming,     setNorming]     = useState(false)
   const [normResult,  setNormResult]  = useState<NormResult | null>(null)
   const [normError,   setNormError]   = useState<string | null>(null)
+
+  // Migrar usuarios
+  const [migrating,   setMigrating]   = useState(false)
+  const [migrResult,  setMigrResult]  = useState<MigrResult | null>(null)
+  const [migrError,   setMigrError]   = useState<string | null>(null)
 
   async function triggerNormalize() {
     if (!confirm('¿Corregir todos los nombres con formato incorrecto? Esta acción modifica la base de datos.')) return
@@ -45,6 +51,20 @@ export default function AagSyncClient({ initial }: { initial: SyncStatus }) {
       else setNormResult(data)
     } catch { setNormError('Error de red') }
     finally { setNorming(false) }
+  }
+
+  async function triggerMigrarUsuarios() {
+    if (!confirm('¿Crear usuarios para todos los jugadores con matrícula que aún no tengan acceso al sistema?')) return
+    setMigrating(true)
+    setMigrResult(null)
+    setMigrError(null)
+    try {
+      const res = await fetch('/api/admin/migrar-usuarios', { method: 'POST' })
+      const data = await res.json()
+      if (!res.ok) setMigrError(data.error ?? 'Error')
+      else setMigrResult(data)
+    } catch { setMigrError('Error de red') }
+    finally { setMigrating(false) }
   }
 
   async function triggerSync() {
@@ -184,6 +204,37 @@ export default function AagSyncClient({ initial }: { initial: SyncStatus }) {
               </div>
             )}
           </div>
+        )}
+      </div>
+
+      {/* Migrar usuarios */}
+      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h2 className="text-base font-semibold text-gray-900">Activar acceso de golfistas</h2>
+            <p className="text-xs text-gray-500 mt-1">
+              Crea usuarios para todos los jugadores con matrícula que aún no puedan ingresar al sistema.
+              Usuario y contraseña inicial = número de matrícula.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={triggerMigrarUsuarios}
+            disabled={migrating}
+            className="flex-shrink-0 px-4 py-2 text-sm rounded-lg font-medium border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50 transition-colors"
+          >
+            {migrating ? 'Procesando…' : 'Activar accesos'}
+          </button>
+        </div>
+        {migrError && (
+          <p className="mt-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{migrError}</p>
+        )}
+        {migrResult && (
+          <p className="mt-3 text-sm text-gray-700">
+            <span className="font-semibold text-green-700">{migrResult.creados}</span> usuarios creados,{' '}
+            <span className="text-gray-500">{migrResult.omitidos} ya tenían acceso</span>{' '}
+            (total con matrícula: {migrResult.total}).
+          </p>
         )}
       </div>
 

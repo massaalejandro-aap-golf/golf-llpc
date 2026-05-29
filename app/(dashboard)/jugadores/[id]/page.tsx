@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import { requireSession } from '@/lib/session'
+import ResetPasswordButton from './ResetPasswordButton'
 
 const TIPO_LABEL: Record<string, string> = {
   SOCIO: 'Socio',
@@ -92,12 +93,17 @@ export default async function JugadorPage(props: { params: Promise<{ id: string 
               <p className="text-3xl font-bold text-green-800">{jugador.hcpIndex.toFixed(1)}</p>
             </div>
             {canEdit && (
-              <Link
-                href={`/jugadores/${jugador.id}/editar`}
-                className="px-4 py-2 text-sm border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50"
-              >
-                Editar
-              </Link>
+              <div className="flex flex-col gap-2">
+                <Link
+                  href={`/jugadores/${jugador.id}/editar`}
+                  className="px-4 py-2 text-sm border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 text-center"
+                >
+                  Editar
+                </Link>
+                {session.role === 'ADMIN' && jugador.matricula && (
+                  <ResetPasswordButton jugadorId={jugador.id} matricula={jugador.matricula} />
+                )}
+              </div>
             )}
           </div>
         </div>

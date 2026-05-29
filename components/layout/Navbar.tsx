@@ -4,13 +4,18 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import type { SessionUser } from '@/lib/session'
 
-const navItems = [
+const staffNavItems = [
   { href: '/',            label: 'Inicio' },
   { href: '/torneos',     label: 'Torneos' },
   { href: '/leaderboard', label: 'Leaderboard' },
   { href: '/reservas',    label: 'Reservas' },
   { href: '/jugadores',   label: 'Jugadores' },
   { href: '/cancha',      label: 'Cancha' },
+]
+
+const socioNavItems = [
+  { href: '/reservas',    label: 'Reservas' },
+  { href: '/leaderboard', label: 'Leaderboard' },
 ]
 
 const adminItems = [
@@ -30,12 +35,15 @@ export default function Navbar({ user }: { user: SessionUser }) {
   const isActive = (href: string) =>
     href === '/' ? pathname === '/' : pathname.startsWith(href)
 
+  const isSocio = user.role === 'SOCIO'
+  const navItems = isSocio ? socioNavItems : staffNavItems
+
   return (
     <nav className="bg-green-700 text-white shadow-md">
       <div className="container mx-auto px-4 max-w-7xl">
         <div className="flex items-center justify-between h-14">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 font-bold text-lg">
+          <Link href={isSocio ? '/reservas' : '/'} className="flex items-center gap-2 font-bold text-lg">
             <span>⛳</span>
             <span className="hidden sm:inline">La Lucila Polo Club</span>
           </Link>
@@ -70,6 +78,11 @@ export default function Navbar({ user }: { user: SessionUser }) {
           {/* Usuario */}
           <div className="flex items-center gap-3">
             <span className="text-sm text-green-200 hidden sm:inline">{user.nombre}</span>
+            {isSocio && (
+              <Link href="/mi-cuenta" className="text-xs text-green-300 hover:text-white transition-colors">
+                Mi cuenta
+              </Link>
+            )}
             <button
               onClick={handleLogout}
               className="text-xs text-green-300 hover:text-white transition-colors"

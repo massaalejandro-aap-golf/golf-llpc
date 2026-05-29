@@ -18,7 +18,7 @@ export default function LoginPage() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        email: formData.get('email'),
+        email: formData.get('usuario'),
         password: formData.get('password'),
       }),
     })
@@ -47,15 +47,15 @@ export default function LoginPage() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-              Email
+            <label htmlFor="usuario" className="block text-sm font-medium text-gray-700 mb-1">
+              Email o Matrícula
             </label>
             <input
-              id="email"
-              name="email"
-              type="email"
+              id="usuario"
+              name="usuario"
+              type="text"
               required
-              autoComplete="email"
+              autoComplete="username"
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
             />
           </div>

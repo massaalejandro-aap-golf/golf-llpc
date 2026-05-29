@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getSession } from '@/lib/session'
+import { ensurePlayerUser } from '@/lib/player-user'
 import { z } from 'zod'
 
 const JugadorSchema = z.object({
@@ -80,5 +81,6 @@ export async function POST(req: NextRequest) {
   }
 
   const jugador = await prisma.player.create({ data: parsed.data })
+  await ensurePlayerUser(jugador)
   return NextResponse.json(jugador, { status: 201 })
 }
