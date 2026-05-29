@@ -1,0 +1,762 @@
+
+<!DOCTYPE html>
+<html lang="es" translate="no">
+<head>
+    <meta name="google" content="notranslate" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Search - AAG Gestión</title>
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" />
+    <link href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAABJmlDQ1BBZG9iZSBSR0IgKDE5OTgpAAAoz2NgYDJwdHFyZRJgYMjNKykKcndSiIiMUmA/z8DGwMwABonJxQWOAQE+IHZefl4qAwb4do2BEURf1gWZxUAa4EouKCoB0n+A2CgltTiZgYHRAMjOLi8pAIozzgGyRZKywewNIHZRSJAzkH0EyOZLh7CvgNhJEPYTELsI6Akg+wtIfTqYzcQBNgfClgGxS1IrQPYyOOcXVBZlpmeUKBhaWloqOKbkJ6UqBFcWl6TmFit45iXnFxXkFyWWpKYA1ULcBwaCEIWgENMAarTQZKAyAMUDhPU5EBy+jGJnEGIIkFxaVAZlMjIZE+YjzJgjwcDgv5SBgeUPQsykl4FhgQ4DA/9UhJiaIQODgD4Dw745AMDGT/0ZOjZcAAAACXBIWXMAAAsTAAALEwEAmpwYAAAIc2lUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS42LWMxNDIgNzkuMTYwOTI0LCAyMDE3LzA3LzEzLTAxOjA2OjM5ICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdEV2dD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlRXZlbnQjIiB4bWxuczpwaG90b3Nob3A9Imh0dHA6Ly9ucy5hZG9iZS5jb20vcGhvdG9zaG9wLzEuMC8iIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIgeG1sbnM6dGlmZj0iaHR0cDovL25zLmFkb2JlLmNvbS90aWZmLzEuMC8iIHhtbG5zOmV4aWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20vZXhpZi8xLjAvIiB4bXA6Q3JlYXRvclRvb2w9IkFkb2JlIFBob3Rvc2hvcCBDQyAyMDE3IChXaW5kb3dzKSIgeG1wOkNyZWF0ZURhdGU9IjIwMTctMTAtMDJUMTU6NTg6NTEtMDM6MDAiIHhtcDpNZXRhZGF0YURhdGU9IjIwMTktMDEtMThUMTE6MDI6NDItMDM6MDAiIHhtcDpNb2RpZnlEYXRlPSIyMDE5LTAxLTE4VDExOjAyOjQyLTAzOjAwIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOmUzYTEyZTk0LTI3NzYtMjc0MC1hMTQ0LTFhZmUyYzBlMjJjNCIgeG1wTU06RG9jdW1lbnRJRD0iYWRvYmU6ZG9jaWQ6cGhvdG9zaG9wOjlmYWI0ZjBkLWQ2YWQtM2M0NC1hODE0LTViMWEzZmIxNjI5ZiIgeG1wTU06T3JpZ2luYWxEb2N1bWVudElEPSJ4bXAuZGlkOjcwMTc3NDMyLWY5NmUtMjQ0MC05MzJiLTQ2MjliMWQ0MWYxMiIgcGhvdG9zaG9wOkNvbG9yTW9kZT0iMyIgcGhvdG9zaG9wOklDQ1Byb2ZpbGU9IkFkb2JlIFJHQiAoMTk5OCkiIGRjOmZvcm1hdD0iaW1hZ2UvcG5nIiB0aWZmOk9yaWVudGF0aW9uPSIxIiB0aWZmOlhSZXNvbHV0aW9uPSI3MjAwMDAvMTAwMDAiIHRpZmY6WVJlc29sdXRpb249IjcyMDAwMC8xMDAwMCIgdGlmZjpSZXNvbHV0aW9uVW5pdD0iMiIgZXhpZjpDb2xvclNwYWNlPSI2NTUzNSIgZXhpZjpQaXhlbFhEaW1lbnNpb249Ijg2MCIgZXhpZjpQaXhlbFlEaW1lbnNpb249Ijg1OCI+IDx4bXBNTTpIaXN0b3J5PiA8cmRmOlNlcT4gPHJkZjpsaSBzdEV2dDphY3Rpb249ImNyZWF0ZWQiIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6NzAxNzc0MzItZjk2ZS0yNDQwLTkzMmItNDYyOWIxZDQxZjEyIiBzdEV2dDp3aGVuPSIyMDE3LTEwLTAyVDE1OjU4OjUxLTAzOjAwIiBzdEV2dDpzb2Z0d2FyZUFnZW50PSJBZG9iZSBQaG90b3Nob3AgQ0MgMjAxNyAoV2luZG93cykiLz4gPHJkZjpsaSBzdEV2dDphY3Rpb249InNhdmVkIiBzdEV2dDppbnN0YW5jZUlEPSJ4bXAuaWlkOjU4NGUyODFlLWFiZmMtMDQ0Zi05MzdmLTBhNTViNGI2OTJiMSIgc3RFdnQ6d2hlbj0iMjAxNy0xMC0wMlQxNTo1ODo1MS0wMzowMCIgc3RFdnQ6c29mdHdhcmVBZ2VudD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTcgKFdpbmRvd3MpIiBzdEV2dDpjaGFuZ2VkPSIvIi8+IDxyZGY6bGkgc3RFdnQ6YWN0aW9uPSJzYXZlZCIgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDplM2ExMmU5NC0yNzc2LTI3NDAtYTE0NC0xYWZlMmMwZTIyYzQiIHN0RXZ0OndoZW49IjIwMTktMDEtMThUMTE6MDI6NDItMDM6MDAiIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIFBob3Rvc2hvcCBDQyAoV2luZG93cykiIHN0RXZ0OmNoYW5nZWQ9Ii8iLz4gPC9yZGY6U2VxPiA8L3htcE1NOkhpc3Rvcnk+IDxwaG90b3Nob3A6RG9jdW1lbnRBbmNlc3RvcnM+IDxyZGY6QmFnPiA8cmRmOmxpPmFkb2JlOmRvY2lkOnBob3Rvc2hvcDozMmJkMDUxYi0zNTk5LTExZTctOTAxYi1lODE3ODFlYjg0ZTc8L3JkZjpsaT4gPC9yZGY6QmFnPiA8L3Bob3Rvc2hvcDpEb2N1bWVudEFuY2VzdG9ycz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz48OPFBAAALa0lEQVRYw5VXe1CTVxY/CIqrrVaq4oPio9qntloQEHk/A4FACCFACK9AgASSQAIhhISE8AjvV3gLCKKgqIhi1dZ2d2enu9vdcTu2U2d0t+5MO9OZnW1nt/tod921355zIY7O7O7s/nEh+XLvuef8zu/8zvmgYW4WXMty9jS0XjjHVlhNVU1wra6o9vQ01M6cAu3EGGhwaVeX67P5zMzjs0+u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" rel="icon" type="image/x-icon">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+    <link href="/Content/LogIn.css" rel="stylesheet" />
+    <script src="/bundles/jquery?v="></script>
+
+    <link href="/Content/css?v=J5-mymC7O1cp_R8an8HEMdLKpBNCKfa-tTRSz5CdSeU1" rel="stylesheet"/>
+
+    <script src="/bundles/bootstrap?v=Ar3UBWOlCrSHh0u4h1UEdGqrOKjNXGcPlPfEwOPEr8I1"></script>
+
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            GetToggledItems();
+            BrowserDetect.init();
+        });
+
+        function ShowNav() {
+            $(".profile-sidebar").slideToggle();
+        }
+        function SlideToggleItem(senderItem) {
+            var itemToToggle = $(senderItem).siblings(".hidden-ul-item");
+            if (itemToToggle.css("display") == "none") {
+                itemToToggle.slideDown();
+                senderItem.style.transform = "rotate(180deg)";
+                //Check name and add to localstorage key
+                var name = itemToToggle.attr("id");
+                switch (name) {
+                    case "SearchSectionToggle":
+                        localStorage.setItem("SearchToggled", "yes");
+                        break;
+                    case "AdminSectionToggle":
+                        localStorage.setItem("AdminToggled", "yes");
+                        break;
+                    case "ClubsSectionToggle":
+                        localStorage.setItem("ClubesToggled", "yes");
+                        break;
+                    case "EnrolledsSectionToggle":
+                        localStorage.setItem("EnrolledsToggled", "yes");
+                        break;
+                    case "PressSectionToggle":
+                        localStorage.setItem("PressToggled", "yes");
+                        break;
+                    case "PartnersSectionToggle":
+                        localStorage.setItem("PartnerToggled", "yes");
+                        break;
+                    case "ReportsSectionToggle":
+                        localStorage.setItem("ReportToggled", "yes");
+                        break;
+                    case "BackendSectionToggle":
+                        localStorage.setItem("BackendToggled", "yes");
+                        break;
+                    default:
+                        break;
+                }
+            }
+            else {
+                itemToToggle.slideUp();
+                senderItem.style.transform = "rotate(0deg)";
+                //Check name and remove from localstorage key
+                var name = itemToToggle.attr("id");
+                switch (name) {
+                    case "SearchSectionToggle":
+                        localStorage.setItem("SearchToggled", "no");
+                        break;
+                    case "AdminSectionToggle":
+                        localStorage.setItem("AdminToggled", "no");
+                        break;
+                    case "ClubsSectionToggle":
+                        localStorage.setItem("ClubesToggled", "no");
+                        break;
+                    case "EnrolledsSectionToggle":
+                        localStorage.setItem("EnrolledsToggled", "no");
+                        break;
+                    case "PressSectionToggle":
+                        localStorage.setItem("PressToggled", "no");
+                        break;
+                    case "PartnersSectionToggle":
+                        localStorage.setItem("PartnerToggled", "no");
+                        break;
+                    case "ReportsSectionToggle":
+                        localStorage.setItem("ReportToggled", "no");
+                        break;
+                    case "BackendSectionToggle":
+                        localStorage.setItem("BackendToggled", "no");
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        function GetToggledItems() {
+            // Check browser support
+            if (typeof (Storage) !== "undefined") {
+                //Check if previously saved
+                if (localStorage.getItem("SavedData") == "yes") {
+                    if (localStorage.getItem("SearchToggled") == "yes") {
+                        $("#SearchSectionToggle").show();
+                        var toggle0 = document.getElementById("toggle0");
+                        if (toggle0 != null) {
+                            toggle0.style.transform = "rotate(180deg)";
+                        }
+                    }
+                    if (localStorage.getItem("AdminToggled") == "yes") {
+                        $("#AdminSectionToggle").show();
+                        var toggle1 = document.getElementById("toggle1");
+                        if (toggle1 != null) {
+                            toggle1.style.transform = "rotate(180deg)";
+                        }
+                    }
+                    if (localStorage.getItem("ClubesToggled") == "yes") {
+                        $("#ClubsSectionToggle").show();
+                        var toggle2 = document.getElementById("toggle2");
+                        if (toggle2 != null) {
+                            toggle2.style.transform = "rotate(180deg)";
+                        }
+                    }
+                    if (localStorage.getItem("EnrolledsToggled") == "yes") {
+                        $("#EnrolledsSectionToggle").show();
+                        var toggle3 = document.getElementById("toggle3");
+                        if (toggle3 != null) {
+                            toggle3.style.transform = "rotate(180deg)";
+                        }
+                    }
+                    if (localStorage.getItem("PressToggled") == "yes") {
+                        $("#PressSectionToggle").show();
+                        var toggle4 = document.getElementById("toggle4");
+                        if (toggle4 != null) {
+                            toggle4.style.transform = "rotate(180deg)";
+                        }
+                    }
+                    if (localStorage.getItem("PartnerToggled") == "yes") {
+                        $("#PartnersSectionToggle").show();
+                        var toggle5 = document.getElementById("toggle5");
+                        if (toggle5 != null) {
+                            toggle5.style.transform = "rotate(180deg)";
+                        }
+                    }
+                    if (localStorage.getItem("ReportToggled") == "yes") {
+                        $("#ReportsSectionToggle").show();
+                        var toggle6 = document.getElementById("toggle6");
+                        if (toggle6 != null) {
+                            toggle6.style.transform = "rotate(180deg)";
+                        }
+                    }
+                    if (localStorage.getItem("BackendToggled") == "yes") {
+                        $("#BackendSectionToggle").show();
+                        var toggle7 = document.getElementById("toggle7");
+                        if (toggle7 != null) {
+                            toggle7.style.transform = "rotate(180deg)";
+                        }
+                    }
+                }
+                else {
+                    localStorage.setItem("SavedData", "yes");
+                    localStorage.setItem("SearchToggled", "no");
+                    localStorage.setItem("AdminToggled", "no");
+                    localStorage.setItem("ClubesToggled", "no");
+                    localStorage.setItem("EnrolledsToggled", "no");
+                    localStorage.setItem("PressToggled", "no");
+                    localStorage.setItem("PartnerToggled", "no");
+                    localStorage.setItem("ReportToggled", "no");
+                    localStorage.setItem("BackendToggled", "no");
+                }
+            } else {
+                Console.log("Sorry, your browser does not support Web Storage...");
+            }
+        }
+
+        /**/</script>
+</head>
+<body onload="hideLoading()">
+    <div id="page-container" class="container body-content">
+            <div class="top-header">
+                <img alt="imagen-header" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUsAAABICAYAAAB/VNeEAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA5JpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMTM4IDc5LjE1OTgyNCwgMjAxNi8wOS8xNC0wMTowOTowMSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0iYWRvYmU6ZG9jaWQ6cGhvdG9zaG9wOjg2ZDI2YzE3LTQ2ZWQtMTFlNy1hZjAwLWYwN2E0YTE5NzVjZiIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDo1REQ0QThFRDRGOUIxMUU3QkM1QkFGRDg0MjdBOTU3NiIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDo1REQ0QThFQzRGOUIxMUU3QkM1QkFGRDg0MjdBOTU3NiIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ0MgMjAxNCAoV2luZG93cykiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDowM2NhZTczOC1lZjUwLTZjNGMtODEyMC02OGZjNWIxYzBmZGUiIHN0UmVmOmRvY3VtZW50SUQ9ImFkb2JlOmRvY2lkOnBob3Rvc2hvcDpiMWFkNWQ0ZS00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" />
+
+                <div class="top-right-nav-user">
+                    <a id="top-username" href="/Home/Admin"><i class="fas fa-user"></i> 347LALUCILA</a>
+                    <p id="top-club"><i class="fas fa-golf-ball"></i> 347 - LA LUCILA POLO CLUB</p>
+                    <a class="help-button" href="/Home/Help"><i class="fas fa-question-circle"></i>Ayuda</a>
+                </div>
+                <div class="toggle-button" onclick="ShowNav()"><i class="fas fa-bars"></i></div>
+            </div>
+        <div class="inner-container">
+                <div class="profile-sidebar">
+                    <!-- SIDEBAR MENU -->
+                    <div class="profile-usermenu">
+                        <ul class="nav">
+                            <!--BuscadorSection-->
+                            <li class="white-text toggle-item has-permissions" id="liFinder">
+                                <a>
+                                    <i class="fas fa-search"></i>
+                                    Buscador
+                                </a>
+                                <i class="fas fa-angle-down floating-right" onclick="SlideToggleItem(this)" id="toggle0"></i>
+                                <ul id="SearchSectionToggle" class="hidden-ul-item">
+                                    <li id="BuscadorMatriculados" class="has-permissions">
+                                        <a href="/Enrolled/Search">
+                                            Matriculados
+                                        </a>
+                                    </li>
+                                    <li id="FinderClubes" class="has-permissions">
+                                        <a href="/Club/Search">
+                                            Clubes
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <!--ProfileSection-->
+                            <li id="Profile">
+                                <a href="/Home/Admin">
+                                    <i class="far fa-user-circle"></i>
+                                    Mi perfil
+                                </a>
+                            </li>
+                            <!--AdminSection-->
+                            <li class="white-text toggle-item no-permissions">
+                                <a href="#">
+                                    <i class="fas fa-user-tie"></i>
+                                    Admin
+                                </a>
+                                <i class="fas fa-angle-down floating-right" onclick="SlideToggleItem(this)" id="toggle1"></i>
+                                <ul id="AdminSectionToggle" class="hidden-ul-item">
+                                    <!--Configurations-->
+                                    <li id="Configurations" class="no-permissions">
+                                        <a href="/AppMobile">
+                                            Estadisticas de App Mobile
+                                        </a>
+                                    </li>
+                                    <!--Web User Section-->
+                                    <li id="aagusers">
+                                        <a href="/User">
+                                            Usuarios Web
+                                        </a>
+                                    </li>
+                                    <!--Web User Section-->
+                                    <li id="aaginvoicesupload">
+                                        <a href="/Club/ClubInvoicesUpload">
+                                            Subida de Facturas y Notas de Cr&#233;dito
+                                        </a>
+                                    </li>
+                                    <!--Proceso de Handicap Section-->
+                                    <li id="Handicaps">
+                                        <a href="/Home/CommingSoon">
+                                            Handicaps
+                                        </a>
+                                    </li>
+                                    <!--Lenguajes Section-->
+                                    <li id="Languages">
+                                        <a href="/Language">
+                                            Idiomas
+                                        </a>
+                                    </li>
+                                    <!--Configurations-->
+                                    <li id="Configurations" class="no-permissions">
+                                        <a href="/Configuration/Edit">
+                                            Configuraciones
+                                        </a>
+                                    </li>
+                                    <!--ScoreCardForeing Section-->
+                                    <li id="ScoreCardForeing" class="no-permissions">
+                                        <a href="/ForeignScoreCard">
+                                            Tarjetas Extranjeras
+                                        </a>
+                                    </li>
+                                    <!--Initial Cards Section-->
+                                    <li id="InitialCardsManager" class="no-permissions">
+                                        <a href="/InitialCardsManager">
+                                            Tarjetas Iniciales
+                                        </a>
+                                    </li>
+                                    <!--Authorization code Index-->
+                                    <li id="ManualHi" class="no-permissions">
+                                        <a href="/AuthorizationCode">
+                                            Autorizaciones
+                                        </a>
+                                    </li>
+                                    <!--Historic Differential-->
+                                    <li id="HistoricDifferential" class="no-permissions">
+                                        <a href="/HistoricDifferential">
+                                            Diferenciales Historicos
+                                        </a>
+                                    </li>
+                                    <!--Historic Differential-->
+                                    <li id="HistoricDifferential" class="no-permissions">
+                                        <a href="/ForceProcessEnrolled">
+                                            Forzar reproceso de matriculas
+                                        </a>
+                                    </li>
+                                    <!--Manual Handicap Index-->
+                                    <li id="AuthorizationCodes" class="no-permissions">
+                                        <a href="/ManualHandicapIndex">
+                                            Handicap Index Manual
+                                        </a>
+                                    </li>
+                                    <!--Manual Low Handicap Index-->
+                                    <li id="AuthorizationCodes" class="no-permissions">
+                                        <a href="/ManualLowHandicapIndex">
+                                            Low Handicap Index Manual
+                                        </a>
+                                    </li>
+                                    <!--Championships Section-->
+                                    <li id="Championship" class="no-permissions">
+                                        <a href="/Championship">
+                                            Campeonatos
+                                        </a>
+                                    </li>
+                                    <!--WHSHandicapIndexPublishingHistory Section-->
+                                    <li id="WHSHandicapIndexPublishingHistory" class="no-permissions">
+                                        <a href="/WHSHandicapIndexPublishHistory/Search">
+                                            WHS HI Historial de publicaci&#243;n
+                                        </a>
+                                    </li>
+                                    <!--WHSHandicapIndexPublishingHistory Section-->
+                                    <li id="WHSHandicapIndexPublishingHistory" class="no-permissions">
+                                        <a href="/UserProfile/Search">
+                                            Perfiles de usuario
+                                        </a>
+                                    </li>
+                                    <!--CAF Section-->
+                                    <li id="CAF" class="no-permissions">
+                                        <a href="/CAF">
+                                            Carga Novedades CAF
+                                        </a>
+                                    </li>
+                                    <!--Movimientos Historicos -->
+                                    <li id="HistoricalMovements" class="no-permissions">
+                                        <a href="/HistoricalMovements">
+                                            Movimientos Hist&#243;ricos
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <!--FederationSection-->
+                            <li id="federations" class="no-permissions">
+                                <a href="/Federation">
+                                    <i class="fas fa-certificate"></i>
+                                    Federaciones
+                                </a>
+                            </li>
+                            <!--ClubSection-->
+                            <li class="white-text toggle-item has-permissions">
+                                <a>
+                                    <i class="far fa-building"></i>
+                                    Clubes
+                                </a>
+                                <i class="fas fa-angle-down floating-right" onclick="SlideToggleItem(this)" id="toggle2"></i>
+                                <ul id="ClubsSectionToggle" class="hidden-ul-item">
+                                    <!--Mi CLub-->
+                                    <li id="myClub" class="has-permissions">
+                                        <a href="/Club/MyClub?ClubId=217">
+                                            Mi Club
+                                        </a>
+                                    </li>
+                                    <!--Mis Circuitos-->
+                                    <li id="myCourses" class="has-permissions">
+                                        <a href="/GolfField/Index/217">
+                                            Mis Canchas
+                                        </a>
+                                    </li>
+                                    <!--Mis Circuitoss-->
+                                    <li id="CourseHandicap" class="has-permissions">
+                                        <a href="/Club/CourseHandicap/217">
+                                            Course Hándicap 
+                                        </a>
+                                    </li>
+                                    <!--Mis Matriculados-->
+                                    <li id="clubemployees" class="has-permissions">
+                                        <a href="/Enrolled/EnrolledByClub">
+                                            Mis Matriculados
+                                        </a>
+                                    </li>
+                                    <!--Empleados Club Section-->
+                                    <li id="clubemployees" class="no-permissions">
+                                        <a href="/Employee">
+                                            Empleados
+                                        </a>
+                                    </li>
+                                    <!--Mis Cambios de Section-->
+                                    <li id="PassRequest" class="has-permissions">
+                                        <a href="/Club/PassRequest">
+                                            Pedidos de Cambio
+                                        </a>
+                                    </li>
+                                    <!--Autoridades Club Section-->
+                                    <li id="Authority" class="no-permissions">
+                                        <a href="/ClubAuthority">
+                                            Autoridades
+                                        </a>
+                                    </li>
+                                    <!--Autoridades Posicion Section-->
+                                    <li id="AuthorityPositions" class="no-permissions">
+                                        <a href="/AuthorityPositions">
+                                            Cargos autoridades
+                                        </a>
+                                    </li>
+                                    <!--Proveedores Club Section-->
+                                    <li id="Providers" class="has-permissions">
+                                        <a href="/Supplier/Search">
+                                            Proveedores
+                                        </a>
+                                    </li>
+                                    <!--Torneos Club Section-->
+                                    <li id="Tournaments" class="has-permissions">
+                                        <a href="/Tournament">
+                                            Torneos
+                                        </a>
+                                    </li>
+                                    <!--Validities Section-->
+                                    <li id="Validities" class="has-permissions">
+                                        <a href="/Validity">
+                                            Vigencias
+                                        </a>
+                                    </li>
+                                    <!--Handicap Index Categories Section-->
+                                    <li id="Validities" class="no-permissions">
+                                        <a href="/HandicapIndexCategory">
+                                            Categorias Handicap Index
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <!--EnrolledSection-->
+                            <li class="white-text toggle-item no-permissions">
+                                <a>
+                                    <i class="fas fa-users"></i>
+                                    Matriculados
+                                </a>
+                                <i class="fas fa-angle-down floating-right" onclick="SlideToggleItem(this)" id="toggle3"></i>
+                                <ul id="EnrolledsSectionToggle" class="hidden-ul-item">
+                                    <!--Reportes Section-->
+                                    <li id="Reports" class="no-permissions">
+                                        <a href="/Enrolled/AppEnrolled">
+                                            App Matriculados
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <!--PressSection-->
+                            <li class="white-text toggle-item no-permissions">
+                                <a href="/Home/CommingSoon">
+                                    <i class="fas fa-newspaper"></i>
+                                    Prensa
+                                </a>
+                                <i class="fas fa-angle-down floating-right" onclick="SlideToggleItem(this)" id="toggle4"></i>
+                                <ul id="PressSectionToggle" class="hidden-ul-item">
+                                    <!--Tag Section-->
+                                    <li id="Tags" class="no-permissions">
+                                        <a href="/Tag">
+                                            Etiquetas
+                                        </a>
+                                    </li>
+                                    <!--Content Section-->
+                                    <li id="Content" class="no-permissions">
+                                        <a href="/NewsContent">
+                                            Contenidos
+                                        </a>
+                                    </li>
+                                    <!--Streaming Section-->
+                                    
+                                </ul>
+                            </li>
+                            <!--PartnerSection-->
+                            <li class="white-text toggle-item no-permissions">
+                                <a href="/Partner">
+                                    <i class="far fa-handshake"></i>
+                                    Partners
+                                </a>
+                                <i class="fas fa-angle-down floating-right" onclick="SlideToggleItem(this)" id="toggle5"></i>
+                                <ul id="PartnersSectionToggle" class="hidden-ul-item">
+                                    <!--Empleados Partner Section-->
+                                    <li id="partneremployees" class="no-permissions">
+                                        <a href="/EmployeePartner">
+                                            Empleados
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <!--ReportSection-->
+                            <li class="white-text toggle-item no-permissions">
+                                <a>
+                                    <i class="fas fa-file-alt"></i>
+                                    Reportes
+                                </a>
+                                <i class="fas fa-angle-down floating-right" onclick="SlideToggleItem(this)" id="toggle6"></i>
+                                <ul id="ReportsSectionToggle" class="hidden-ul-item">
+                                    <!--CourseHandicap-->
+                                    <li id="courseHandicap" class="has-permissions">
+                                        <a href="/Report/CourseHandicap">Course handicap</a>
+                                    </li>
+                                    <!--FOR CLUBS-->
+                                    <li id="forClubs" class="has-permissions">
+                                        
+                                        <a href="/Report/ForClubs">
+
+                                            Clubes
+                                        </a>
+                                    </li>
+                                    <!--FOR ENROLLED-->
+                                    <li id="forEnrolled" class="has-permissions">
+                                        
+                                        <a href="/Report/ForEnrolled">
+
+                                            Matriculados
+                                        </a>
+                                    </li>
+                                    <!--PADRON-->
+                                    <li id="padron" class="has-permissions">
+                                        
+                                        <a href="/Report/Padron">
+
+                                            Padr&#243;n
+                                        </a>
+                                    </li>
+                                    <!--SCORECARD-->
+                                    <li id="scoreCard" class="has-permissions">
+                                        
+                                        <a href="/Report/ScoreCard">
+                                            Tarjetas en Torneo
+                                        </a>
+                                    </li>
+                                    <!--MyScoreCard-->
+                                    <li id="myScoreCard" class="no-permissions">
+                                        
+                                        <a href="/Report/MyScoreCard">
+                                            Tarjeta de Juego
+                                        </a>
+                                    </li>
+                                    <!--MyScoreCardEnrolled-->
+                                    <li id="myScoreCard" class="no-permissions">
+                                        
+                                        <a href="/Report/MyScoreCardEnrolled">
+                                            Tarjeta de Matriculado
+                                        </a>
+                                    </li>
+                                    <!--PAR3 National Report-->
+                                    <li id="ReportPar3" class="no-permissions">
+                                        <a href="/Report/Par3NationalAssociation">
+                                            Reporte de Clubes Par 3
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <!--BackEndSection-->
+                            <li class="white-text toggle-item no-permissions">
+                                <a>
+                                    <i class="fas fa-user-shield"></i>
+                                    Backend
+                                </a>
+                                <i class="fas fa-angle-down floating-right" onclick="SlideToggleItem(this)" id="toggle7"></i>
+                                <ul id="BackendSectionToggle" class="hidden-ul-item">
+                                    <!--Sorteos-->
+                                    <li id="Raffled" class="no-permissions">
+                                        <a href="/Raffled/SimpleRaffle">Simple Raffle</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <!--InitialCardsCreate-->
+                            <!--<li id="backEndInitialCards" class="no-permissions">
+                                        <a href="/Backend/InitialCards">Carga de tarjetas iniciales</a>
+                                    </li>
+                                </ul>
+                            </li>-->
+                            <!--LogOutSection-->
+                            <li id="Logout">
+                                <a href="/Home/LogOff">
+                                    <i class="fas fa-ban"></i>
+                                    Salir
+                                </a>
+                            </li>
+                        </ul>
+                        <!-- END SIDEBAR USERPIC -->
+                    </div>
+                    <!-- END MENU -->
+                    <!-- SIDEBAR USERPIC -->
+                </div>
+
+            <div class="detail-container">
+                
+
+<link href="/Content/LogIn.css" rel="stylesheet" />
+<link href="/Content/Gridmvc.css" rel="stylesheet" />
+<script src="/Scripts/gridmvc.min.js"></script>
+<link href="/Content/bootstrap-select.css" rel="stylesheet" />
+<script src="/Scripts/bootstrap-select.js"></script>
+<script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.7/jquery.validate.min.js"></script>
+<div class="container">
+    <div class="">
+        <div class=" clubes-list tenue-background">
+            <div class="top-buttons-container">
+                <a class="btn btn-warning btn-lg  btn-back" href="/Home/Admin" role="button"><span class="fas fa-chevron-left" aria-hidden="true"></span>&nbsp;Volver</a>
+                <a class="btn btn-info btn-lg btn-add" href="/Enrolled/Create" role="button"><span class="fas fa-plus" aria-hidden="true"></span>&nbsp;Alta de Jugador</a>
+            </div>
+            <h2>Matriculados</h2>
+<form action="/Enrolled/Search" class="form-horizontal" id="searchForm" method="get" role="form"><input name="__RequestVerificationToken" type="hidden" value="h4HjWFRDpINEe84WADp76uOsiDF3XjJP1zWov5o7zv9vEEcgSauTd2MLkc9VSRGNJENB0dHoWMMM3UeiLTJZCxi6Bad01IJg0t4Fu5R1_SNCqKUvJK5j74eyb7iQWFHlEvIZkWC2Ay3bzZA4iyGMvznOCNZ8QrrdW0NT6HnwV6SECFvNnpA3Th7DHanFFGnXg8W7nyIrj7JIwMIAS7jsi0rbyKV1QGwR7LVyItahRPvtn9jjZs7Cdkv68vXwJZrCtk6OxUdzFji_xDO7CfRMxDxRjhXrqs78N4G4kd3CqOuv2VBt0ublQMeTvukFH_7706bNVPH3c07an5iL3XuqxyhQZ3IHQufvCjp7kcnAlXeKYpS2sNXY-fp407eXhim4vfS6b_HIQsqQWuj1Bcb5lif2NIfdpu4eMohUZj23xCpqvEcd82Wpnh5X-9o92A_DFJMEzLcNvSFvr4k7LVJNHy6Q50PVvb48QLf59Irwya6synoZiYKSyKfWTVtAHjhgDN0hkxHclz04V7JaT8s1hC5Zyz6rT7cDn2WlnvpDS0XfhRL1NgtqkRn4M0LeEeOJg1Clrs48QgLYmuaNNc-H2DrVFE8Fz5c8cXUb8MCHl4RxIh0kbOpf_qFDUQgJxv0twLAxzi-qI8kUsdsMb6WR05_NNkbaUVWIbLQPUg_DYvrl5jbpL3hXc8_Z-1yOuXEnUwlmfX0Gbi1yh-zHENeKYEVsXq3VxE5Qb_YIlKHKtg7gNXFO5zxSdkjyhqnueoOGgRKKS_9Wt6-OX4xP2fgG2pX2w7BzwZH_N3ai1jMIjBIz55LoGRVfY5QQbsb_kSrQoifQ_0XV9_uI5uFM5RMM__xkkHv1Q_SYX8kJ2QwBECA1" />                <div class="search-bar-container">
+                    <a class="text-left search-label">
+                        <input type="text" id="name" name="name" value="88730" class="search-input" placeholder="Buscar" />
+                    </a>
+                    <button class="btn btn-info btn-lg btn-add" role="button" type="submit"><span class="fas fa-search" aria-hidden="true"></span></button>
+                </div>
+</form>
+
+            <div class=" full95-width " style="height: 100vh;">
+    <div class="grid-mvc" data-lang="en" data-gridname="" data-selectable="false" data-multiplefilters ="false">
+        <div class="grid-wrap">
+            <table class="table table-striped grid-table">
+                
+                <thead>
+                        <tr>
+<th class="grid-header text-center right-border" style="width:20px;"><div class="grid-filter" data-filterdata="[]" data-name="EnrollmentNumber" data-type="System.String" data-url="?name=88730" data-widgetdata="null"><span class="grid-filter-btn" title="Filter this column"></span></div><div class="grid-header-title"><a href="?name=88730&amp;grid-column=EnrollmentNumber&amp;grid-dir=0">Número</a></div></th><th class="grid-header text-center right-border"><div class="grid-filter" data-filterdata="[]" data-name="IdentificationNumber" data-type="System.String" data-url="?name=88730" data-widgetdata="null"><span class="grid-filter-btn" title="Filter this column"></span></div><div class="grid-header-title"><a href="?name=88730&amp;grid-column=IdentificationNumber&amp;grid-dir=0">Identificación</a></div></th><th class="grid-header text-center right-border"><div class="grid-filter" data-filterdata="[]" data-name="DisplayName" data-type="System.String" data-url="?name=88730" data-widgetdata="null"><span class="grid-filter-btn" title="Filter this column"></span></div><div class="grid-header-title"><a href="?name=88730&amp;grid-column=DisplayName&amp;grid-dir=0">Nombre</a></div></th><th class="grid-header text-center right-border"><div class="grid-filter" data-filterdata="[]" data-name="DisplayBirthDate" data-type="System.String" data-url="?name=88730" data-widgetdata="null"><span class="grid-filter-btn" title="Filter this column"></span></div><div class="grid-header-title"><a href="?name=88730&amp;grid-column=DisplayBirthDate&amp;grid-dir=0">Fecha Nac.</a></div></th><th class="grid-header text-center right-border"><div class="grid-filter" data-filterdata="[]" data-name="EnrollmentClub" data-type="System.String" data-url="?name=88730" data-widgetdata="null"><span class="grid-filter-btn" title="Filter this column"></span></div><div class="grid-header-title"><a href="?name=88730&amp;grid-column=EnrollmentClub&amp;grid-dir=0">Club</a></div></th><th class="grid-header text-center right-border"><div class="grid-filter" data-filterdata="[]" data-name="EnrollmentFederacion" data-type="System.String" data-url="?name=88730" data-widgetdata="null"><span class="grid-filter-btn" title="Filter this column"></span></div><div class="grid-header-title"><a href="?name=88730&amp;grid-column=EnrollmentFederacion&amp;grid-dir=0">Federation</a></div></th><th class="grid-header text-center right-border"><div class="grid-filter" data-filterdata="[]" data-name="EnrollmentCategoria" data-type="System.String" data-url="?name=88730" data-widgetdata="null"><span class="grid-filter-btn" title="Filter this column"></span></div><div class="grid-header-title"><a href="?name=88730&amp;grid-column=EnrollmentCategoria&amp;grid-dir=0">Category</a></div></th><th class="grid-header text-center right-border"><div class="grid-filter" data-filterdata="[]" data-name="DisplayRegistrationDate" data-type="System.String" data-url="?name=88730" data-widgetdata="null"><span class="grid-filter-btn" title="Filter this column"></span></div><div class="grid-header-title"><a href="?name=88730&amp;grid-column=DisplayRegistrationDate&amp;grid-dir=0">Registración</a></div></th><th class="grid-header text-center right-border" style="width:30px;"><div class="grid-filter" data-filterdata="[]" data-name="Decommission" data-type="System.Boolean" data-url="?name=88730" data-widgetdata="null"><span class="grid-filter-btn" title="Filter this column"></span></div><div class="grid-header-title"><a href="?name=88730&amp;grid-column=Decommission&amp;grid-dir=0">Baja</a></div></th><th class="grid-header text-center right-border"><div class="grid-filter" data-filterdata="[]" data-name="EnrollmentEmail" data-type="System.String" data-url="?name=88730" data-widgetdata="null"><span class="grid-filter-btn" title="Filter this column"></span></div><div class="grid-header-title"><a href="?name=88730&amp;grid-column=EnrollmentEmail&amp;grid-dir=0">Email</a></div></th><th class="grid-header" style="width:30px;"><div class="grid-header-title"><span></span></div></th>    </tr>
+
+                </thead>
+                <tbody>
+                        <tr class="grid-row ">
+<td class="grid-cell text-center right-border" data-name="EnrollmentNumber">188730</td><td class="grid-cell text-center right-border" data-name="IdentificationNumber">36186948</td><td class="grid-cell text-center right-border" data-name="DisplayName">Curti, Gustavo German</td><td class="grid-cell text-center right-border" data-name="DisplayBirthDate">18/8/1991</td><td class="grid-cell text-center right-border" data-name="EnrollmentClub">432 - CLUB VELOCIDAD</td><td class="grid-cell text-center right-border" data-name="EnrollmentFederacion">CORDOBA</td><td class="grid-cell text-center right-border" data-name="EnrollmentCategoria">CAB</td><td class="grid-cell text-center right-border" data-name="DisplayRegistrationDate">8/1/2026</td><td class="grid-cell text-center right-border" data-name="Decommission">Activo</td><td class="grid-cell text-center right-border" data-name="EnrollmentEmail">gustavocurti07@gmail.com</td><td class="grid-cell" data-name="">    <select id=opcion_168432 name="opcion_168432" class="selectpicker" onchange="Redireccionar(168432 + ':' + 188730,this)">
+        <option value="0"></option>
+        <option value="1">Detalle</option>
+        <option value="2">Editar</option>
+        <option value="3">Historial</option>
+        <option value="4">Cambio de Club</option>
+            <option value="6"> Baja</option>
+        <option value="7">Differentials History</option>
+
+        <option value="8">Diferencial</option>
+        <option value="9">Tarjetas Iniciales</option>
+
+        
+    </select>
+</td>    </tr>
+    <tr class="grid-row ">
+<td class="grid-cell text-center right-border" data-name="EnrollmentNumber">88730</td><td class="grid-cell text-center right-border" data-name="IdentificationNumber">26959553</td><td class="grid-cell text-center right-border" data-name="DisplayName">MASSA, ALEJANDRO</td><td class="grid-cell text-center right-border" data-name="DisplayBirthDate">9/1/1979</td><td class="grid-cell text-center right-border" data-name="EnrollmentClub">347 - LA LUCILA POLO CLUB</td><td class="grid-cell text-center right-border" data-name="EnrollmentFederacion">FENOBA</td><td class="grid-cell text-center right-border" data-name="EnrollmentCategoria">CAB</td><td class="grid-cell text-center right-border" data-name="DisplayRegistrationDate">1/7/2018</td><td class="grid-cell text-center right-border" data-name="Decommission">Activo</td><td class="grid-cell text-center right-border" data-name="EnrollmentEmail">amassa@sinagro.com.ar</td><td class="grid-cell" data-name="">    <select id=opcion_372 name="opcion_372" class="selectpicker" onchange="Redireccionar(372 + ':' + 88730,this)">
+        <option value="0"></option>
+        <option value="1">Detalle</option>
+        <option value="2">Editar</option>
+        <option value="3">Historial</option>
+        <option value="4">Cambio de Club</option>
+            <option value="6"> Baja</option>
+        <option value="7">Differentials History</option>
+
+        <option value="8">Diferencial</option>
+        <option value="9">Tarjetas Iniciales</option>
+
+        
+    </select>
+</td>    </tr>
+
+                </tbody>
+            </table>
+                <div class="grid-footer">
+        
+    </div>
+
+        </div>
+    </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function Redireccionar(Id,e)
+    {
+        var Id = Id.split(':');
+
+        //console.log($("#cmbAccion"));
+        //console.log($("#"+e.name).val());
+        var myURL = '';
+        switch ($("#" + e.name).val()) {
+            case "1":
+                myURL = '/Enrolled/Detail?Id=' + Id[0];
+                break;
+            case "2":
+                myURL = '/Enrolled/Edit/' + Id[0];
+                break;
+            case "3":
+                myURL = '/Enrolled/DecommissionHistory/' + Id[0];
+                break;
+            case "4":
+                myURL = '/Enrolled/ClubChange?IdEnrolled=' + Id[0];
+                break;
+            case "5":
+                 myURL = '/Enrolled/Reincorporate/' + Id[0];
+            break;
+            case "6":
+                myURL = '/Enrolled/Decommission/' + Id[0];
+            break;
+            case "7":
+                myURL = '/Enrolled/DifferentialHistory/' + Id[0] + '?enrollmentNumber=' + Id[1];
+                break;
+            case "8":
+                myURL = '/Enrolled/DifferentialsDetailFromMenu/' + Id[0];
+            break;
+            case "9":
+                myURL = '/InitialCardsManager/RedirectIndex?EnrolledId=' + Id[0] ;
+            break;
+            case "10":
+                myURL = '/Enrolled/CreateInitialScoreCards/' + Id[0] ;
+            break;
+        }
+
+
+        console.log(myURL);
+        window.location = myURL;
+    }
+</script>
+            </div>
+            <div id="WaitDialog" style="text-align: center">
+                <img class="loading" src="/Images/loadingimage.png" />
+                <span class="loading-text">Cargando</span>
+            </div>
+        </div>
+            <footer>
+                <p>&copy; 2026 - <a href="http://tecnocode.net/" style="text-decoration:none; color:inherit">Tecnocode S.A.</a></p>
+            </footer>
+    </div>
+    <script>
+        function showLoading(jump = 0) {
+
+            /* if (jump = 0) {*/
+            console.log('showload');
+            $("#WaitDialog").fadeIn(200).delay(20000).fadeOut(200);
+            /*  }*/
+        }
+        function hideLoading() {
+            $("#WaitDialog").hide();
+        }
+        var menuItems = $(".toggle-item");
+        for (i = 0; i < menuItems.length; i++) {
+            var thisItem = menuItems[i]
+            var hiddenUlItem = $(thisItem).find(".hidden-ul-item");
+            var hasPermissionItems = $(hiddenUlItem).find(".has-permissions");
+            var noPermissionItems = $(hiddenUlItem).find(".no-permissions");
+            if (hasPermissionItems.length > 0) {
+                $(thisItem).addClass("has-permissions");
+                $(thisItem).removeClass("no-permissions");
+            }
+            else if (noPermissionItems.length == $(hiddenUlItem).children().length) {
+                var toggleElement = $(thisItem).find(".fa-angle-down");
+                toggleElement.css("display", "none");
+            }
+        }
+
+    </script>
+    
+</body>
+</html>
+

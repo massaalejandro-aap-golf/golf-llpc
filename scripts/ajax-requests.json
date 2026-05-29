@@ -1,0 +1,22 @@
+[
+  {
+    "method": "GET",
+    "url": "https://golf.org.ar/Enrolled/Detail/971",
+    "postData": null
+  },
+  {
+    "method": "GET",
+    "url": "https://golf.org.ar/bundles/jquery?v=",
+    "postData": null
+  },
+  {
+    "method": "GET",
+    "url": "https://golf.org.ar/Content/css?v=J5-mymC7O1cp_R8an8HEMdLKpBNCKfa-tTRSz5CdSeU1",
+    "postData": null
+  },
+  {
+    "method": "GET",
+    "url": "https://golf.org.ar/bundles/bootstrap?v=Ar3UBWOlCrSHh0u4h1UEdGqrOKjNXGcPlPfEwOPEr8I1",
+    "postData": null
+  }
+]

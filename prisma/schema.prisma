@@ -1,0 +1,375 @@
+// Golf Club Tournament System — AAP Club
+// Schema Prisma v7
+
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================================
+// CANCHA (Course)
+// ============================================================
+
+model Course {
+  id     Int     @id @default(autoincrement())
+  nombre String
+  ciudad String?
+  pais   String  @default("Argentina")
+
+  holes       Hole[]
+  tees        CourseTee[]
+  tournaments Tournament[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+/// Un tee (color/marcador de salida) dentro de una cancha.
+/// Cada tee tiene su propio slope, rating y yardas por hoyo.
+model CourseTee {
+  id          Int    @id @default(autoincrement())
+  courseId    Int
+  nombre      String // "Azul", "Blanco", "Rojo", "Amarillo", "Junior"
+  color       String @default("#6B7280") // hex para la UI
+  slope       Int?   // slope general (113 = standard)
+  slopeIda    Int?   // slope hoyos 1–9
+  slopeVuelta Int?   // slope hoyos 10–18
+  rating      Float?
+
+  course        Course          @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  hoyos         CourseTeeHole[]
+  torneosHombre Tournament[]    @relation("TorneoTeeHombre")
+  torneosDama   Tournament[]    @relation("TorneoTeeDama")
+
+  @@unique([courseId, nombre])
+  @@index([courseId])
+}
+
+/// Yardas de un hoyo específico para un tee específico.
+model CourseTeeHole {
+  id     Int  @id @default(autoincrement())
+  teeId  Int
+  holeId Int
+  yardas Int?
+
+  tee  CourseTee @relation(fields: [teeId], references: [id], onDelete: Cascade)
+  hole Hole      @relation(fields: [holeId], references: [id], onDelete: Cascade)
+
+  @@unique([teeId, holeId])
+  @@index([teeId])
+}
+
+model Hole {
+  id                 Int  @id @default(autoincrement())
+  courseId           Int
+  numero             Int  // 1–18
+  par                Int  // par caballeros (3, 4 o 5)
+  parDamas           Int? // par damas cuando difiere del masculino
+  handicapIndex      Int  // HCP caballeros (1–18)
+  handicapIndexDamas Int? // HCP damas cuando difiere del masculino
+
+  course           Course          @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  scorecardEntries ScorecardEntry[]
+  teeHoles         CourseTeeHole[]
+
+  @@unique([courseId, numero])
+  @@index([courseId])
+}
+
+// ============================================================
+// PLANTILLAS DE CATEGORÍAS
+// ============================================================
+
+/// Conjunto reutilizable de categorías (ej. "Medal mixto estándar").
+/// Al crear un torneo se elige una plantilla y las categorías se copian.
+model CategorySet {
+  id          Int     @id @default(autoincrement())
+  nombre      String
+  descripcion String?
+  activo      Boolean @default(true)
+
+  categories  CategoryTemplate[]
+  tournaments Tournament[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+/// Una categoría dentro de una plantilla.
+model CategoryTemplate {
+  id       Int     @id @default(autoincrement())
+  setId    Int
+  genero   Gender
+  nombre   String  // "A", "B", "C", "Senior", "Única", "Damas"
+  scratch  Boolean @default(false)
+  hcpDesde Float?
+  hcpHasta Float?
+  orden    Int     @default(0)
+
+  set CategorySet @relation(fields: [setId], references: [id], onDelete: Cascade)
+
+  @@index([setId])
+}
+
+// ============================================================
+// JUGADORES (Players)
+// ============================================================
+
+enum PlayerType {
+  SOCIO
+  INVITADO
+  SOCIO_TEMPORARIO
+  INVITADO_TEMPORARIO
+}
+
+enum Gender {
+  DAMA
+  CABALLERO
+}
+
+model Player {
+  id          Int        @id @default(autoincrement())
+  matricula   String?    @unique
+  nombre      String
+  apellido    String
+  hcpIndex    Float      @default(0)
+  genero      Gender
+  tipo        PlayerType @default(SOCIO)
+  email       String?
+  dni         String?
+  fechaNac    DateTime?
+  telefono    String?
+  centroCosto String?
+  categoria   String?
+  activo      Boolean    @default(true)
+  aagId       String?
+
+  teeTimeSlots TeeTimeSlotPlayer[]
+  scorecards   Scorecard[]
+  results      Result[]
+  user         User?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([matricula])
+  @@index([apellido, nombre])
+}
+
+// ============================================================
+// TORNEOS (Tournaments)
+// ============================================================
+
+enum TournamentType {
+  MEDAL
+  STABLEFORD
+  MATCH_PLAY
+  CHOICE_ECLECTIC
+  RANKING
+  GOLFER
+  FOURBALL_AMERICANO
+  FOURBALL_CLASICO
+  FOURBALL_AGGREGATE
+  LAGUNEADA
+  FOURSOME_CHAPMAN
+  FOURSOME_MIXED
+  FOURSOME
+  SCRAMBLE
+  PELOTERO
+}
+
+enum TournamentStatus {
+  ACTIVO
+  EN_JUEGO
+  FINALIZADO
+  PROCESADO
+  POSPUESTO
+  SUSPENDIDO
+  CANCELADO
+}
+
+enum HolesCount {
+  NINE
+  EIGHTEEN
+}
+
+model Tournament {
+  id                Int              @id @default(autoincrement())
+  nombre            String
+  nombrePlanilla    String?
+  fecha             DateTime
+  tipo              TournamentType   @default(MEDAL)
+  hoyos             HolesCount       @default(EIGHTEEN)
+  ronda             String           @default("Única")
+  jugadoresPorLinea Int              @default(4)
+  scoreMaxMedal       Boolean          @default(false)
+  aagEnabled          Boolean          @default(true)
+  reservasHabilitadas Boolean          @default(false)
+  status              TournamentStatus @default(ACTIVO)
+
+  courseId      Int
+  teeHombreId   Int?  // tee de salida para caballeros
+  teeDamaId     Int?  // tee de salida para damas
+  categorySetId Int?  // plantilla de categorías usada (referencia informativa)
+
+  weatherDesc      String?
+  weatherTempC     Int?
+  weatherVientoKmh Int?
+
+  course      Course       @relation(fields: [courseId], references: [id])
+  teeHombre   CourseTee?   @relation("TorneoTeeHombre", fields: [teeHombreId], references: [id])
+  teeDama     CourseTee?   @relation("TorneoTeeDama", fields: [teeDamaId], references: [id])
+  categorySet CategorySet? @relation(fields: [categorySetId], references: [id])
+
+  categories   TournamentCategory[]
+  teeTimeSlots TeeTimeSlot[]
+  scorecards   Scorecard[]
+  results      Result[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([fecha])
+  @@index([status])
+}
+
+model TournamentCategory {
+  id           Int     @id @default(autoincrement())
+  tournamentId Int
+  genero       Gender
+  nombre       String
+  scratch      Boolean @default(false)
+  hcpDesde     Float?
+  hcpHasta     Float?
+
+  tournament Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  results    Result[]
+
+  @@unique([tournamentId, genero, nombre])
+  @@index([tournamentId])
+}
+
+// ============================================================
+// PLANILLA DE RESERVAS / TEE TIMES
+// ============================================================
+
+model TeeTimeSlot {
+  id           Int     @id @default(autoincrement())
+  tournamentId Int
+  hora         DateTime
+  hoyoSalida   Int     @default(1)
+  bloqueado    Boolean @default(false)
+
+  tournament Tournament          @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  players    TeeTimeSlotPlayer[]
+
+  @@unique([tournamentId, hora, hoyoSalida])
+  @@index([tournamentId])
+}
+
+model TeeTimeSlotPlayer {
+  id            Int     @id @default(autoincrement())
+  teeTimeSlotId Int
+  playerId      Int
+  carro         Boolean @default(false)
+
+  teeTimeSlot TeeTimeSlot @relation(fields: [teeTimeSlotId], references: [id], onDelete: Cascade)
+  player      Player      @relation(fields: [playerId], references: [id])
+
+  @@unique([teeTimeSlotId, playerId])
+  @@index([playerId])
+}
+
+// ============================================================
+// TARJETAS / SCORECARDS
+// ============================================================
+
+model Scorecard {
+  id             Int       @id @default(autoincrement())
+  tournamentId   Int
+  playerId       Int
+  ronda          Int       @default(1)
+  aagSubmitted   Boolean   @default(false)
+  aagSubmittedAt DateTime?
+  aagResponse    String?
+
+  tournament Tournament     @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  player     Player         @relation(fields: [playerId], references: [id])
+  entries    ScorecardEntry[]
+
+  @@unique([tournamentId, playerId, ronda])
+  @@index([tournamentId])
+  @@index([playerId])
+}
+
+model ScorecardEntry {
+  id          Int @id @default(autoincrement())
+  scorecardId Int
+  holeId      Int
+  golpes      Int
+
+  scorecard Scorecard @relation(fields: [scorecardId], references: [id], onDelete: Cascade)
+  hole      Hole      @relation(fields: [holeId], references: [id])
+
+  @@unique([scorecardId, holeId])
+  @@index([scorecardId])
+}
+
+// ============================================================
+// RESULTADOS
+// ============================================================
+
+model Result {
+  id            Int @id @default(autoincrement())
+  tournamentId  Int
+  playerId      Int
+  categoryId    Int
+
+  ida           Int?
+  vuelta        Int?
+  grossTotal    Int?
+  hcpStrokes    Int?
+  neto          Int?
+  stablefordPts Int?
+  puesto        Int?
+
+  birdies Int @default(0)
+  pares   Int @default(0)
+  bogeys  Int @default(0)
+  dobles  Int @default(0)
+
+  tournament Tournament         @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  player     Player             @relation(fields: [playerId], references: [id])
+  category   TournamentCategory @relation(fields: [categoryId], references: [id])
+
+  @@unique([tournamentId, playerId])
+  @@index([tournamentId, categoryId])
+}
+
+// ============================================================
+// USUARIOS (Acceso al sistema)
+// ============================================================
+
+enum UserRole {
+  ADMIN
+  COMISION
+  SOCIO
+}
+
+model User {
+  id       Int      @id @default(autoincrement())
+  email    String   @unique
+  password String
+  nombre   String
+  role     UserRole @default(SOCIO)
+  playerId Int?     @unique
+
+  player Player? @relation(fields: [playerId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

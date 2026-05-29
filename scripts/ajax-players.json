@@ -1,0 +1,74 @@
+[
+  {
+    "aagId": 372,
+    "matricula": "First",
+    "nombre": null,
+    "apellido": null,
+    "hcpIndex": 4.9,
+    "lowHcp": 4.2,
+    "genero": "DAMA"
+  },
+  {
+    "aagId": 388,
+    "matricula": "First",
+    "nombre": null,
+    "apellido": null,
+    "hcpIndex": null,
+    "lowHcp": null,
+    "genero": "DAMA"
+  },
+  {
+    "aagId": 536,
+    "matricula": "First",
+    "nombre": null,
+    "apellido": null,
+    "hcpIndex": 4.5,
+    "lowHcp": 4.1,
+    "genero": "DAMA"
+  },
+  {
+    "aagId": 669,
+    "matricula": "First",
+    "nombre": null,
+    "apellido": null,
+    "hcpIndex": null,
+    "lowHcp": null,
+    "genero": "DAMA"
+  },
+  {
+    "aagId": 884,
+    "matricula": "First",
+    "nombre": null,
+    "apellido": null,
+    "hcpIndex": 7.7,
+    "lowHcp": 7.4,
+    "genero": "DAMA"
+  },
+  {
+    "aagId": 895,
+    "matricula": "First",
+    "nombre": null,
+    "apellido": null,
+    "hcpIndex": 23.5,
+    "lowHcp": 21.2,
+    "genero": "DAMA"
+  },
+  {
+    "aagId": 957,
+    "matricula": "First",
+    "nombre": null,
+    "apellido": null,
+    "hcpIndex": 4.8,
+    "lowHcp": 4.8,
+    "genero": "DAMA"
+  },
+  {
+    "aagId": 971,
+    "matricula": "First",
+    "nombre": null,
+    "apellido": null,
+    "hcpIndex": 11.7,
+    "lowHcp": 11.7,
+    "genero": "DAMA"
+  }
+]

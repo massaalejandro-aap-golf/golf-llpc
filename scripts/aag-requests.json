@@ -1,0 +1,178 @@
+[
+  {
+    "method": "GET",
+    "url": "https://golf.org.ar/Home/Login"
+  },
+  {
+    "method": "GET",
+    "url": "https://golf.org.ar/bundles/jquery?v="
+  },
+  {
+    "method": "GET",
+    "url": "https://golf.org.ar/Content/css?v=J5-mymC7O1cp_R8an8HEMdLKpBNCKfa-tTRSz5CdSeU1"
+  },
+  {
+    "method": "GET",
+    "url": "https://golf.org.ar/bundles/bootstrap?v=Ar3UBWOlCrSHh0u4h1UEdGqrOKjNXGcPlPfEwOPEr8I1"
+  },
+  {
+    "method": "GET",
+    "url": "https://golf.org.ar/Images/webbackground.jpg"
+  },
+  {
+    "method": "POST",
+    "url": "https://golf.org.ar/Home/Login"
+  },
+  {
+    "method": "GET",
+    "url": "https://golf.org.ar/Home/Admin"
+  },
+  {
+    "method": "GET",
+    "url": "https://golf.org.ar/bundles/jquery?v="
+  },
+  {
+    "method": "GET",
+    "url": "https://golf.org.ar/Content/css?v=J5-mymC7O1cp_R8an8HEMdLKpBNCKfa-tTRSz5CdSeU1"
+  },
+  {
+    "method": "GET",
+    "url": "https://golf.org.ar/bundles/bootstrap?v=Ar3UBWOlCrSHh0u4h1UEdGqrOKjNXGcPlPfEwOPEr8I1"
+  },
+  {
+    "method": "GET",
+    "url": "https://golf.org.ar/Club/Search"
+  },
+  {
+    "method": "GET",
+    "url": "https://golf.org.ar/bundles/jquery?v="
+  },
+  {
+    "method": "GET",
+    "url": "https://golf.org.ar/Content/css?v=J5-mymC7O1cp_R8an8HEMdLKpBNCKfa-tTRSz5CdSeU1"
+  },
+  {
+    "method": "GET",
+    "url": "https://golf.org.ar/bundles/bootstrap?v=Ar3UBWOlCrSHh0u4h1UEdGqrOKjNXGcPlPfEwOPEr8I1"
+  },
+  {
+    "method": "GET",
+    "url": "https://golf.org.ar/Club/ClubInvoicesUpload"
+  },
+  {
+    "method": "GET",
+    "url": "https://golf.org.ar/bundles/jquery?v="
+  },
+  {
+    "method": "GET",
+    "url": "https://golf.org.ar/Content/css?v=J5-mymC7O1cp_R8an8HEMdLKpBNCKfa-tTRSz5CdSeU1"
+  },
+  {
+    "method": "GET",
+    "url": "https://golf.org.ar/bundles/bootstrap?v=Ar3UBWOlCrSHh0u4h1UEdGqrOKjNXGcPlPfEwOPEr8I1"
+  },
+  {
+    "method": "GET",
+    "url": "https://golf.org.ar/ManualHandicapIndex"
+  },
+  {
+    "method": "GET",
+    "url": "https://golf.org.ar/Home/AccessDenied"
+  },
+  {
+    "method": "GET",
+    "url": "https://golf.org.ar/bundles/jquery?v="
+  },
+  {
+    "method": "GET",
+    "url": "https://golf.org.ar/Content/css?v=J5-mymC7O1cp_R8an8HEMdLKpBNCKfa-tTRSz5CdSeU1"
+  },
+  {
+    "method": "GET",
+    "url": "https://golf.org.ar/bundles/bootstrap?v=Ar3UBWOlCrSHh0u4h1UEdGqrOKjNXGcPlPfEwOPEr8I1"
+  },
+  {
+    "method": "GET",
+    "url": "https://golf.org.ar/ManualLowHandicapIndex"
+  },
+  {
+    "method": "GET",
+    "url": "https://golf.org.ar/Home/AccessDenied"
+  },
+  {
+    "method": "GET",
+    "url": "https://golf.org.ar/bundles/jquery?v="
+  },
+  {
+    "method": "GET",
+    "url": "https://golf.org.ar/Content/css?v=J5-mymC7O1cp_R8an8HEMdLKpBNCKfa-tTRSz5CdSeU1"
+  },
+  {
+    "method": "GET",
+    "url": "https://golf.org.ar/bundles/bootstrap?v=Ar3UBWOlCrSHh0u4h1UEdGqrOKjNXGcPlPfEwOPEr8I1"
+  },
+  {
+    "method": "GET",
+    "url": "https://golf.org.ar/WHSHandicapIndexPublishHistory/Search"
+  },
+  {
+    "method": "GET",
+    "url": "https://golf.org.ar/Home/AccessDenied"
+  },
+  {
+    "method": "GET",
+    "url": "https://golf.org.ar/bundles/jquery?v="
+  },
+  {
+    "method": "GET",
+    "url": "https://golf.org.ar/Content/css?v=J5-mymC7O1cp_R8an8HEMdLKpBNCKfa-tTRSz5CdSeU1"
+  },
+  {
+    "method": "GET",
+    "url": "https://golf.org.ar/bundles/bootstrap?v=Ar3UBWOlCrSHh0u4h1UEdGqrOKjNXGcPlPfEwOPEr8I1"
+  },
+  {
+    "method": "GET",
+    "url": "https://golf.org.ar/Jugadores"
+  },
+  {
+    "method": "GET",
+    "url": "https://golf.org.ar/Jugadores/Index"
+  },
+  {
+    "method": "GET",
+    "url": "https://golf.org.ar/Jugadores/Lista"
+  },
+  {
+    "method": "GET",
+    "url": "https://golf.org.ar/Handicap"
+  },
+  {
+    "method": "GET",
+    "url": "https://golf.org.ar/Handicap/Lista"
+  },
+  {
+    "method": "GET",
+    "url": "https://golf.org.ar/Club/Jugadores"
+  },
+  {
+    "method": "GET",
+    "url": "https://golf.org.ar/Club/Padron"
+  },
+  {
+    "method": "GET",
+    "url": "https://golf.org.ar/Api/Jugadores"
+  },
+  {
+    "method": "GET",
+    "url": "https://golf.org.ar/api/jugadores"
+  },
+  {
+    "method": "GET",
+    "url": "https://golf.org.ar/Exportar/Jugadores"
+  },
+  {
+    "method": "GET",
+    "url": "https://golf.org.ar/Reportes/Jugadores"
+  }
+]
