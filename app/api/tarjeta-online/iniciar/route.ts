@@ -40,8 +40,19 @@ export async function POST(req: NextRequest) {
   if (!torneo) return NextResponse.json({ error: 'Torneo no encontrado' }, { status: 404 })
 
   async function getOrCreateScorecard(playerId: number, marcadorPlayerId: number) {
-    const existing = await prisma.scorecard.findUnique({
-      where: { tournamentId_playerId_ronda: { tournamentId: torneoId, playerId, ronda: 1 } },
+    // Para la tarjeta propia (YO), buscamos específicamente la self-marked
+    const whereClause = playerId === marcadorPlayerId
+      ? { tournamentId_playerId_ronda: { tournamentId: torneoId, playerId, ronda: 1 } }
+      : { tournamentId_playerId_ronda: { tournamentId: torneoId, playerId, ronda: 1 } }
+
+    const existing = await prisma.scorecard.findFirst({
+      where: {
+        tournamentId: torneoId,
+        playerId,
+        ronda: 1,
+        // Para YO (self-marked), buscar específicamente la que el jugador se marcó a sí mismo
+        ...(playerId === marcadorPlayerId ? { marcadorPlayerId: playerId } : {}),
+      },
     })
     if (existing) return existing
 
@@ -58,6 +69,7 @@ export async function POST(req: NextRequest) {
   }
 
   const scJug = await getOrCreateScorecard(jugadorId, marcadorId)
+  // La tarjeta YO es la del marcador marcándose a sí mismo — control personal, nunca se envía
   const scYo  = marcaPropia && marcadorId !== jugadorId
     ? await getOrCreateScorecard(marcadorId, marcadorId)
     : null

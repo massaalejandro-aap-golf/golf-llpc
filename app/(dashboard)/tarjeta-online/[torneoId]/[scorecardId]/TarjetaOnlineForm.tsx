@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
 interface Hole {
@@ -36,24 +36,31 @@ function strokesOnHole(chp: number, si: number, n: number) {
 }
 
 // Colores gross - definido fuera del componente para evitar remounts
-function CeldaGolpes({ golpes, par, strokes, onChange, disabled }: {
-  golpes: number | undefined; par: number; strokes: number; onChange: (v: number) => void; disabled: boolean
+function CeldaGolpes({ golpes, par, strokes, onChange, disabled, inconsistente }: {
+  golpes: number | undefined; par: number; strokes: number; onChange: (v: number) => void; disabled: boolean; inconsistente?: boolean
 }) {
   const diff = golpes != null ? golpes - par : null
-  const color = diff == null ? '' :
-    diff <= -2 ? 'bg-yellow-200' : diff === -1 ? 'bg-green-200' :
-    diff === 0 ? 'bg-white' : diff === 1 ? 'bg-red-100' : 'bg-red-200'
+  const color = inconsistente
+    ? 'animate-pulse bg-orange-200 border-orange-400'
+    : diff == null ? '' :
+      diff <= -2 ? 'bg-yellow-200' : diff === -1 ? 'bg-green-200' :
+      diff === 0 ? 'bg-white' : diff === 1 ? 'bg-red-100' : 'bg-red-200'
 
   return (
-    <input
-      type="number"
-      inputMode="numeric"
-      min={1} max={20}
-      value={golpes ?? ''}
-      onChange={(e) => { const v = parseInt(e.target.value); if (v >= 1 && v <= 20) onChange(v) }}
-      disabled={disabled}
-      className={`w-full text-center font-bold text-lg border border-gray-300 rounded-lg py-2 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:bg-gray-50 ${color}`}
-    />
+    <div className="relative">
+      <input
+        type="number"
+        inputMode="numeric"
+        min={1} max={20}
+        value={golpes ?? ''}
+        onChange={(e) => { const v = parseInt(e.target.value); if (v >= 1 && v <= 20) onChange(v) }}
+        disabled={disabled}
+        className={`w-full text-center font-bold text-lg border rounded-lg py-2 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:bg-gray-50 ${color} ${inconsistente ? '' : 'border-gray-300'}`}
+      />
+      {inconsistente && (
+        <span className="absolute -top-1 -right-1 w-3 h-3 bg-orange-500 rounded-full animate-ping" />
+      )}
+    </div>
   )
 }
 
@@ -69,6 +76,23 @@ export default function TarjetaOnlineForm({
   const [saving, setSaving] = useState(false)
   const [sending, setSending] = useState(false)
   const [savedMsg, setSavedMsg] = useState<string | null>(null)
+  // Cross-check: golpes que JUG anotó para sí mismo (su tarjeta YO)
+  const [crossScores, setCrossScores] = useState<Record<number, number>>({})
+
+  // Polling cross-check cada 15s
+  useEffect(() => {
+    if (estado === 'VALIDADA') return
+    async function fetchCross() {
+      const res = await fetch(`/api/tarjeta-online/${scorecardId}/cross-check`)
+      if (res.ok) {
+        const data = await res.json()
+        setCrossScores(data.scores ?? {})
+      }
+    }
+    fetchCross()
+    const interval = setInterval(fetchCross, 15000)
+    return () => clearInterval(interval)
+  }, [scorecardId, estado])
 
   const n = holes.length
   const chpJug = courseHcp(jugador.hcpIndex, teeJug.slope, teeJug.rating, parTotal)
@@ -103,10 +127,10 @@ export default function TarjetaOnlineForm({
   }
 
   async function handleEnviar() {
-    if (!confirm('¿Enviar la tarjeta al buzón? Ya no podrás modificarla.')) return
+    if (!confirm('¿Enviar la tarjeta de ' + jugador.apellido + ' al buzón? Ya no podrás modificarla.')) return
     setSending(true)
+    // Solo se envía la tarjeta de JUG — la YO es solo para control
     await fetch(`/api/tarjeta-online/${scorecardId}/enviar`, { method: 'POST' })
-    if (yoScorecardId) await fetch(`/api/tarjeta-online/${yoScorecardId}/enviar`, { method: 'POST' })
     router.push('/tarjeta-online')
   }
 
@@ -162,6 +186,22 @@ export default function TarjetaOnlineForm({
         )}
       </div>
 
+      {/* Banner de inconsistencias */}
+      {Object.keys(crossScores).length > 0 && holeList.some((h) => {
+        const c = crossScores[h.id]; return c != null && scoresJug[h.id] != null && scoresJug[h.id] !== c
+      }) && (
+        <div className="bg-orange-100 border border-orange-300 rounded-xl p-3 flex items-start gap-2">
+          <span className="text-orange-500 text-lg">⚠</span>
+          <div>
+            <p className="font-semibold text-orange-800 text-sm">Inconsistencia detectada</p>
+            <p className="text-xs text-orange-600 mt-0.5">
+              El marcador y el jugador anotaron golpes diferentes en algunos hoyos.
+              Los hoyos afectados están resaltados en naranja.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Selector IDA / VUELTA */}
       {isEighteen && (
         <div className="flex gap-2">
@@ -199,17 +239,26 @@ export default function TarjetaOnlineForm({
         {holeList.map((h) => {
           const strJug = strokesOnHole(chpJug, h.siJug, n)
           const strYo  = marcador ? strokesOnHole(chpYo, h.siYo, n) : 0
+          // Inconsistencia: el marcador anotó distinto a lo que JUG anotó para sí mismo
+          const crossGolpes = crossScores[h.id]
+          const inconsistente = scoresJug[h.id] != null && crossGolpes != null && scoresJug[h.id] !== crossGolpes
           return (
-            <div key={h.id} className="grid grid-cols-5 border-t border-gray-100 items-center">
+            <div key={h.id} className={`grid grid-cols-5 border-t border-gray-100 items-center ${inconsistente ? 'bg-orange-50' : ''}`}>
               <div className="text-center py-1">
                 <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-gray-800 text-white text-xs font-bold">{h.numero}</span>
                 <div className="text-xs text-gray-400 mt-0.5">{h.par} / {h.siJug}</div>
+                {inconsistente && <div className="text-xs text-orange-600 font-bold">⚠</div>}
               </div>
               <div className="py-1.5 px-1 border-l border-gray-100 text-center text-xs text-gray-400">
                 {strJug > 0 ? `+${strJug}` : '—'}
               </div>
               <div className="py-1.5 px-1 border-l border-gray-100">
-                <CeldaGolpes golpes={scoresJug[h.id]} par={h.par} strokes={strJug} onChange={(v) => setJug(h.id, v)} disabled={!canEdit} />
+                <CeldaGolpes golpes={scoresJug[h.id]} par={h.par} strokes={strJug} onChange={(v) => setJug(h.id, v)} disabled={!canEdit} inconsistente={inconsistente} />
+                {inconsistente && (
+                  <div className="text-xs text-orange-500 text-center mt-0.5">
+                    Jugador: {crossGolpes}
+                  </div>
+                )}
               </div>
               {marcador && <>
                 <div className="py-1.5 px-1 border-l border-gray-100 text-center text-xs text-gray-400">
