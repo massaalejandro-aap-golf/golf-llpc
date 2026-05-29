@@ -29,7 +29,7 @@ export default async function ReservasPage() {
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Reservas</h1>
+        <h1 className="text-2xl font-bold text-green-800">Reservas</h1>
       </div>
 
       {torneos.length === 0 && (
@@ -42,7 +42,7 @@ export default async function ReservasPage() {
 
       {proximos.length > 0 && (
         <section className="space-y-3">
-          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Próximos</h2>
+          <h2 className="text-sm font-bold text-green-700 uppercase tracking-wide">Próximos</h2>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {proximos.map((t) => (
               <TorneoCard key={t.id} torneo={t} />
@@ -53,7 +53,7 @@ export default async function ReservasPage() {
 
       {pasados.length > 0 && (
         <section className="space-y-3">
-          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Anteriores</h2>
+          <h2 className="text-sm font-bold text-green-700 uppercase tracking-wide">Anteriores</h2>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {pasados.map((t) => (
               <TorneoCard key={t.id} torneo={t} />

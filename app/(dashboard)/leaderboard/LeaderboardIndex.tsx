@@ -221,8 +221,8 @@ export default function LeaderboardIndex({
               </div>
 
               <div className="flex-1 min-w-0">
-                <p className="font-semibold text-gray-900 truncate">{t.nombre}</p>
-                <p className="text-xs text-gray-400 mt-0.5">
+                <p className="font-bold text-gray-900 truncate">{t.nombre}</p>
+                <p className="text-xs text-gray-600 mt-0.5">
                   {TIPO_LABEL[t.tipo] ?? t.tipo}
                   {' · '}
                   {t.hoyos === 'EIGHTEEN' ? '18 hoyos' : '9 hoyos'}

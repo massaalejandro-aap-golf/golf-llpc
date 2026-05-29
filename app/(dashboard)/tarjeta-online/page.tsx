@@ -27,7 +27,7 @@ export default async function TarjetaOnlinePage() {
 
   return (
     <div className="space-y-6 max-w-lg mx-auto">
-      <h1 className="text-2xl font-bold text-gray-900">Tarjeta Online</h1>
+      <h1 className="text-2xl font-bold text-green-800">Tarjeta Online</h1>
 
       {torneos.length === 0 && (
         <div className="text-center py-20 text-gray-400">
@@ -45,12 +45,12 @@ export default async function TarjetaOnlinePage() {
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-semibold text-gray-900">{t.nombre}</p>
-                <p className="text-sm text-gray-500 mt-0.5">
+                <p className="font-bold text-gray-900">{t.nombre}</p>
+                <p className="text-sm text-gray-700 font-medium mt-0.5">
                   {new Date(t.fecha).toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' })}
                   {' · '}{t.course.nombre}
                 </p>
-                <p className="text-xs text-gray-400 mt-0.5">{t.tipo.replace(/_/g, ' ')} · {t.hoyos} hoyos</p>
+                <p className="text-xs text-gray-600 mt-0.5">{t.tipo.replace(/_/g, ' ')} · {t.hoyos} hoyos</p>
               </div>
               <span className="text-green-600 font-bold text-lg">→</span>
             </div>

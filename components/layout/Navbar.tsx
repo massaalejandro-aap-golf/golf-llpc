@@ -20,10 +20,10 @@ const adminItems = [
 ]
 
 const socioBottomItems = [
-  { href: '/reservas',       label: 'Reservas',   icon: '📅' },
-  { href: '/leaderboard',    label: 'Ranking',     icon: '🏆' },
-  { href: '/tarjeta-online', label: 'Tarjeta',     icon: '🃏' },
-  { href: '/mi-cuenta',      label: 'Mi cuenta',   icon: '👤' },
+  { href: '/reservas',       label: 'Reservas',       icon: '📅' },
+  { href: '/leaderboard',    label: 'Leaderboard',    icon: '🏆' },
+  { href: '/tarjeta-online', label: 'Tarjeta Online', icon: '🃏' },
+  { href: '/mi-cuenta',      label: 'Mi cuenta',      icon: '👤' },
 ]
 
 export default function Navbar({ user }: { user: SessionUser }) {
