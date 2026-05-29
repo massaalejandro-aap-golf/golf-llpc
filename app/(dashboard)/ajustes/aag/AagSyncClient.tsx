@@ -125,13 +125,13 @@ export default function AagSyncClient({ initial }: { initial: SyncStatus }) {
 
       {/* Cron info */}
       <div className="bg-blue-50 border border-blue-100 rounded-xl p-4">
-        <h3 className="text-sm font-medium text-blue-900 mb-1">⏰ Sync automático</h3>
+        <h3 className="text-sm font-medium text-blue-900 mb-1">⏰ Sync automático activo</h3>
         <p className="text-xs text-blue-700">
           La AAG actualiza los handicaps todos los <strong>viernes</strong>. El sync automático corre
-          los viernes a las <strong>6:00 AM</strong> vía cron.
+          los viernes a las <strong>6:00 AM hora Argentina</strong> vía node-cron integrado en el servidor.
         </p>
         <code className="block mt-2 text-xs bg-blue-100 text-blue-800 rounded px-2 py-1">
-          0 6 * * 5 cd /ruta/al/proyecto &amp;&amp; node scripts/sync-aag.mjs
+          0 9 * * 5 (UTC) — instrumentation.ts
         </code>
       </div>
 

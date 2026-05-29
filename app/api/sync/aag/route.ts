@@ -13,9 +13,13 @@ export async function GET() {
   return NextResponse.json(status)
 }
 
-// POST /api/sync/aag — disparar sync (solo ADMIN)
-export async function POST() {
-  if (!await canSync())
+// POST /api/sync/aag — disparar sync (ADMIN o cron con CRON_SECRET)
+export async function POST(req: Request) {
+  const cronSecret = process.env.CRON_SECRET
+  const authHeader = req.headers.get('authorization')
+  const isCron = cronSecret && authHeader === `Bearer ${cronSecret}`
+
+  if (!isCron && !await canSync())
     return NextResponse.json({ error: 'Sin permiso' }, { status: 403 })
 
   // Verificar que no esté ya corriendo
