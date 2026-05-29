@@ -35,18 +35,15 @@ export default async function ReservasPage(props: { params: Promise<{ id: string
   if (!torneo) notFound()
 
   const canEdit = session.role === 'ADMIN' || session.role === 'COMISION'
+  const socioPlayerId = session.role === 'SOCIO' ? (session.playerId ?? null) : null
 
   return (
     <div className="space-y-6">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm text-gray-500">
-        <Link href="/torneos" className="hover:text-green-700">Torneos</Link>
+        <Link href="/reservas" className="hover:text-green-700">Reservas</Link>
         <span>/</span>
-        <Link href={`/torneos/${torneo.id}`} className="hover:text-green-700 truncate max-w-[200px]">
-          {torneo.nombre}
-        </Link>
-        <span>/</span>
-        <span className="text-gray-700 font-medium">Planilla de reservas</span>
+        <span className="text-gray-700 font-medium truncate max-w-[200px]">{torneo.nombre}</span>
       </div>
 
       {/* Header */}
@@ -77,6 +74,7 @@ export default async function ReservasPage(props: { params: Promise<{ id: string
         jugadoresPorLinea={torneo.jugadoresPorLinea}
         slots={torneo.teeTimeSlots.map((s) => ({ ...s, hora: s.hora.toISOString() }))}
         canEdit={canEdit}
+        socioPlayerId={socioPlayerId}
       />
     </div>
   )

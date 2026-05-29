@@ -10,18 +10,40 @@ const AddPlayerSchema = z.object({
   carro: z.boolean().default(false),
 })
 
+const MAX_RESERVAS_SOCIO = 4
+
 // POST /api/torneos/[id]/reservas/[slotId]/players — agregar jugador al turno
 export async function POST(req: NextRequest, { params }: RouteContext) {
   const session = await getSession()
-  if (!session || (session.role !== 'ADMIN' && session.role !== 'COMISION')) {
-    return NextResponse.json({ error: 'Sin permiso' }, { status: 403 })
-  }
+  if (!session) return NextResponse.json({ error: 'No autenticado' }, { status: 401 })
+
+  const isStaff = session.role === 'ADMIN' || session.role === 'COMISION'
 
   const { id, slotId } = await params
   const body = await req.json()
   const parsed = AddPlayerSchema.safeParse(body)
   if (!parsed.success) {
     return NextResponse.json({ error: 'Datos inválidos' }, { status: 400 })
+  }
+
+  // SOCIO solo puede agregarse a sí mismo
+  if (!isStaff) {
+    if (!session.playerId || parsed.data.playerId !== session.playerId) {
+      return NextResponse.json({ error: 'Solo podés reservar para vos mismo' }, { status: 403 })
+    }
+    // Verificar límite de 4 reservas por torneo
+    const reservasDelSocio = await prisma.teeTimeSlotPlayer.count({
+      where: {
+        playerId: session.playerId,
+        teeTimeSlot: { tournamentId: Number(id) },
+      },
+    })
+    if (reservasDelSocio >= MAX_RESERVAS_SOCIO) {
+      return NextResponse.json(
+        { error: `Ya tenés el máximo de ${MAX_RESERVAS_SOCIO} reservas para este torneo` },
+        { status: 409 }
+      )
+    }
   }
 
   // Verificar límite de jugadores por línea
@@ -72,14 +94,18 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
 // DELETE /api/torneos/[id]/reservas/[slotId]/players?playerId=X — quitar jugador
 export async function DELETE(req: NextRequest, { params }: RouteContext) {
   const session = await getSession()
-  if (!session || (session.role !== 'ADMIN' && session.role !== 'COMISION')) {
-    return NextResponse.json({ error: 'Sin permiso' }, { status: 403 })
-  }
+  if (!session) return NextResponse.json({ error: 'No autenticado' }, { status: 401 })
 
-  const { slotId } = await params
+  const isStaff = session.role === 'ADMIN' || session.role === 'COMISION'
   const { searchParams } = new URL(req.url)
   const playerId = Number(searchParams.get('playerId'))
 
+  // SOCIO solo puede quitarse a sí mismo
+  if (!isStaff && (!session.playerId || playerId !== session.playerId)) {
+    return NextResponse.json({ error: 'Solo podés cancelar tu propia reserva' }, { status: 403 })
+  }
+
+  const { slotId } = await params
   if (!playerId) return NextResponse.json({ error: 'playerId requerido' }, { status: 400 })
 
   await prisma.teeTimeSlotPlayer.deleteMany({

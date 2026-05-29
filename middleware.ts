@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 const SOCIO_ALLOWED = ['/reservas', '/leaderboard', '/mi-cuenta', '/tarjeta-online']
+const SOCIO_TORNEO_RESERVAS = /^\/torneos\/\d+\/reservas$/
 
 export function middleware(req: NextRequest) {
   const { pathname, origin } = req.nextUrl
@@ -25,9 +26,9 @@ export function middleware(req: NextRequest) {
       try {
         const user = JSON.parse(Buffer.from(cookieValue, 'base64').toString('utf-8'))
         if (user?.role === 'SOCIO') {
-          const allowed = SOCIO_ALLOWED.some(
-            (p) => pathname === p || pathname.startsWith(p + '/')
-          )
+          const allowed =
+            SOCIO_ALLOWED.some((p) => pathname === p || pathname.startsWith(p + '/')) ||
+            SOCIO_TORNEO_RESERVAS.test(pathname)
           const isPublic = pathname === '/login' || pathname === '/'
           if (!allowed && !isPublic) {
             return NextResponse.redirect(new URL('/reservas', origin))

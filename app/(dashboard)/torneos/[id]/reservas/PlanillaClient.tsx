@@ -41,7 +41,10 @@ interface Props {
   jugadoresPorLinea: number
   slots: Slot[]
   canEdit: boolean
+  socioPlayerId?: number | null
 }
+
+const MAX_RESERVAS_SOCIO = 4
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -51,7 +54,7 @@ function formatHora(iso: string) {
 
 // ── Componente principal ─────────────────────────────────────────────────────
 
-export default function PlanillaClient({ torneoId, jugadoresPorLinea, slots: initialSlots, canEdit }: Props) {
+export default function PlanillaClient({ torneoId, jugadoresPorLinea, slots: initialSlots, canEdit, socioPlayerId }: Props) {
   const router = useRouter()
   const [slots, setSlots] = useState<Slot[]>(initialSlots)
   const [loading, setLoading] = useState(false)
@@ -176,6 +179,10 @@ export default function PlanillaClient({ torneoId, jugadoresPorLinea, slots: ini
 
   const totalJugadores = slots.reduce((acc, s) => acc + s.players.length, 0)
   const slotsOcupados = slots.filter((s) => s.players.length > 0 && !s.bloqueado).length
+  const misReservas = socioPlayerId
+    ? slots.reduce((acc, s) => acc + s.players.filter((p) => p.playerId === socioPlayerId).length, 0)
+    : 0
+  const puedeReservar = !!socioPlayerId && misReservas < MAX_RESERVAS_SOCIO
 
   return (
     <div className="space-y-6">
@@ -189,6 +196,15 @@ export default function PlanillaClient({ torneoId, jugadoresPorLinea, slots: ini
           <span>·</span>
           <span>{totalJugadores} inscriptos</span>
         </div>
+        {socioPlayerId && (
+          <div className={`text-sm font-medium px-3 py-1.5 rounded-lg ${
+            misReservas >= MAX_RESERVAS_SOCIO
+              ? 'bg-amber-50 text-amber-700 border border-amber-200'
+              : 'bg-green-50 text-green-700 border border-green-200'
+          }`}>
+            Mis reservas: {misReservas} / {MAX_RESERVAS_SOCIO}
+          </div>
+        )}
         {canEdit && slots.length > 0 && (
           <div className="flex gap-2">
             <button
@@ -312,6 +328,9 @@ export default function PlanillaClient({ torneoId, jugadoresPorLinea, slots: ini
                   torneoId={torneoId}
                   jugadoresPorLinea={jugadoresPorLinea}
                   canEdit={canEdit}
+                  socioPlayerId={socioPlayerId ?? null}
+                  puedeReservar={puedeReservar}
+                  onRefresh={() => router.refresh()}
                   onToggleBloqueo={toggleBloqueo}
                   onRemovePlayer={removePlayer}
                   onAddPlayer={addPlayer}
@@ -332,6 +351,9 @@ function SlotRow({
   torneoId,
   jugadoresPorLinea,
   canEdit,
+  socioPlayerId,
+  puedeReservar,
+  onRefresh,
   onToggleBloqueo,
   onRemovePlayer,
   onAddPlayer,
@@ -340,18 +362,51 @@ function SlotRow({
   torneoId: number
   jugadoresPorLinea: number
   canEdit: boolean
+  socioPlayerId: number | null
+  puedeReservar: boolean
+  onRefresh: () => void
   onToggleBloqueo: (slotId: number, bloqueado: boolean) => void
   onRemovePlayer: (slotId: number, playerId: number) => void
   onAddPlayer: (slotId: number, jugador: Jugador) => Promise<boolean>
 }) {
-  // Una plaza de búsqueda abierta a la vez (índice de la plaza, o null)
   const [searchingIdx, setSearchingIdx] = useState<number | null>(null)
+  const [reservando, setReservando] = useState(false)
 
-  // Construir array de N plazas: filled con jugador o null (vacía)
   const plazas: (SlotPlayer | null)[] = Array.from(
     { length: jugadoresPorLinea },
     (_, i) => slot.players[i] ?? null
   )
+
+  const miPlaza = socioPlayerId ? slot.players.find((p) => p.playerId === socioPlayerId) : null
+  const slotLleno = slot.players.length >= jugadoresPorLinea
+
+  async function handleReservar() {
+    if (!socioPlayerId || reservando) return
+    setReservando(true)
+    const res = await fetch(`/api/torneos/${torneoId}/reservas/${slot.id}/players`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ playerId: socioPlayerId }),
+    })
+    if (!res.ok) {
+      const data = await res.json()
+      alert(data.error || 'No se pudo reservar')
+    } else {
+      onRefresh()
+    }
+    setReservando(false)
+  }
+
+  async function handleCancelar() {
+    if (!socioPlayerId || reservando) return
+    setReservando(true)
+    const res = await fetch(
+      `/api/torneos/${torneoId}/reservas/${slot.id}/players?playerId=${socioPlayerId}`,
+      { method: 'DELETE' }
+    )
+    if (res.ok) onRefresh()
+    setReservando(false)
+  }
 
   return (
     <tr className={`hover:bg-gray-50/60 transition-colors ${slot.bloqueado ? 'opacity-40' : ''}`}>
@@ -370,11 +425,11 @@ function SlotRow({
           className={`px-4 py-2.5 align-middle${idx > 0 ? ' border-l border-gray-100' : ''}`}
         >
           {sp ? (
-            /* Plaza ocupada */
             <div className="flex items-center gap-1.5 group min-w-0">
               <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${sp.player.genero === 'DAMA' ? 'bg-pink-400' : 'bg-blue-400'}`} />
-              <span className="text-sm text-gray-800 font-medium truncate">
+              <span className={`text-sm font-medium truncate ${sp.playerId === socioPlayerId ? 'text-green-700' : 'text-gray-800'}`}>
                 {sp.player.apellido}, {sp.player.nombre}
+                {sp.playerId === socioPlayerId && <span className="ml-1 text-xs text-green-500">(vos)</span>}
               </span>
               <span className="text-xs text-gray-400 flex-shrink-0">
                 {sp.player.hcpIndex.toFixed(1)}
@@ -388,9 +443,19 @@ function SlotRow({
                   ×
                 </button>
               )}
+              {/* SOCIO cancela su propia reserva */}
+              {!canEdit && sp.playerId === socioPlayerId && !slot.bloqueado && (
+                <button
+                  onClick={handleCancelar}
+                  disabled={reservando}
+                  className="ml-1 text-xs text-red-400 hover:text-red-600 disabled:opacity-50 flex-shrink-0"
+                  title="Cancelar reserva"
+                >
+                  ×
+                </button>
+              )}
             </div>
           ) : canEdit && !slot.bloqueado ? (
-            /* Plaza vacía — editable */
             searchingIdx === idx ? (
               <PlayerSearch
                 torneoId={torneoId}
@@ -408,8 +473,18 @@ function SlotRow({
                 </span>
               </button>
             )
+          ) : !canEdit && socioPlayerId && !miPlaza && !slotLleno && !slot.bloqueado && idx === slot.players.length ? (
+            /* Primera plaza vacía: botón Reservar para SOCIO */
+            puedeReservar ? (
+              <button
+                onClick={handleReservar}
+                disabled={reservando}
+                className="text-xs bg-green-50 hover:bg-green-100 border border-green-200 text-green-700 rounded px-2.5 py-0.5 disabled:opacity-50 transition-colors"
+              >
+                {reservando ? '...' : 'Reservar'}
+              </button>
+            ) : null
           ) : (
-            /* Plaza vacía — solo lectura */
             <span className="text-xs text-gray-200">—</span>
           )}
         </td>
