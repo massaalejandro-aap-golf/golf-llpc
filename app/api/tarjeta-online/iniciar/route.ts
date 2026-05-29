@@ -4,13 +4,16 @@ import { getSession } from '@/lib/session'
 import { z } from 'zod'
 
 const Schema = z.object({
-  torneoId:     z.number().int().positive(),
-  jugadorId:    z.number().int().positive(), // JUG: al que le lleva la tarjeta
-  marcaPropia:  z.boolean().default(true),   // también crea tarjeta para YO
+  torneoId:    z.number().int().positive(),
+  jugadorId:   z.number().int().positive(),
+  marcaPropia: z.boolean().default(true),
 })
 
 // POST /api/tarjeta-online/iniciar
-// Crea las scorecards online (JUG + opcionalmente YO) y las devuelve.
+// ronda=1 → tarjeta oficial de JUG (marcada por el marcador)
+// ronda=2 → tarjeta de control YO (el marcador anota sus propios golpes, no se envía)
+// Usar rondas distintas evita el conflicto de unique(tournamentId, playerId, ronda)
+// cuando dos jugadores se marcan mutuamente.
 export async function POST(req: NextRequest) {
   const session = await getSession()
   if (!session || !session.playerId) {
@@ -24,7 +27,6 @@ export async function POST(req: NextRequest) {
   const { torneoId, jugadorId, marcaPropia } = parsed.data
   const marcadorId = session.playerId
 
-  // Verificar que el SOCIO tiene reserva en este torneo
   const tieneReserva = await prisma.teeTimeSlotPlayer.findFirst({
     where: { playerId: marcadorId, teeTimeSlot: { tournamentId: torneoId } },
   })
@@ -32,46 +34,41 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'No tenés reserva en este torneo' }, { status: 403 })
   }
 
-  // Verificar que el torneo existe y tiene tee definido
   const torneo = await prisma.tournament.findUnique({
     where: { id: torneoId },
-    select: { id: true, nombre: true, teeHombreId: true, teeDamaId: true, hoyos: true },
+    select: { id: true },
   })
   if (!torneo) return NextResponse.json({ error: 'Torneo no encontrado' }, { status: 404 })
 
-  async function getOrCreateScorecard(playerId: number, marcadorPlayerId: number) {
-    // Para la tarjeta propia (YO), buscamos específicamente la self-marked
-    const whereClause = playerId === marcadorPlayerId
-      ? { tournamentId_playerId_ronda: { tournamentId: torneoId, playerId, ronda: 1 } }
-      : { tournamentId_playerId_ronda: { tournamentId: torneoId, playerId, ronda: 1 } }
+  // Tarjeta oficial de JUG (ronda=1)
+  const scJug = await prisma.scorecard.upsert({
+    where: { tournamentId_playerId_ronda: { tournamentId: torneoId, playerId: jugadorId, ronda: 1 } },
+    update: {},
+    create: {
+      tournamentId:     torneoId,
+      playerId:         jugadorId,
+      ronda:            1,
+      origenOnline:     true,
+      onlineEstado:     'SIENDO_CARGADA',
+      marcadorPlayerId: marcadorId,
+    },
+  })
 
-    const existing = await prisma.scorecard.findFirst({
-      where: {
-        tournamentId: torneoId,
-        playerId,
-        ronda: 1,
-        // Para YO (self-marked), buscar específicamente la que el jugador se marcó a sí mismo
-        ...(playerId === marcadorPlayerId ? { marcadorPlayerId: playerId } : {}),
-      },
-    })
-    if (existing) return existing
-
-    return prisma.scorecard.create({
-      data: {
-        tournamentId:     torneoId,
-        playerId,
-        ronda:            1,
-        origenOnline:     true,
-        onlineEstado:     'SIENDO_CARGADA',
-        marcadorPlayerId,
-      },
-    })
-  }
-
-  const scJug = await getOrCreateScorecard(jugadorId, marcadorId)
-  // La tarjeta YO es la del marcador marcándose a sí mismo — control personal, nunca se envía
-  const scYo  = marcaPropia && marcadorId !== jugadorId
-    ? await getOrCreateScorecard(marcadorId, marcadorId)
+  // Tarjeta de control YO del marcador (ronda=2, mismo jugador=marcadorId)
+  // Solo control — nunca se envía al torneo
+  const scYo = marcaPropia && marcadorId !== jugadorId
+    ? await prisma.scorecard.upsert({
+        where: { tournamentId_playerId_ronda: { tournamentId: torneoId, playerId: marcadorId, ronda: 2 } },
+        update: {},
+        create: {
+          tournamentId:     torneoId,
+          playerId:         marcadorId,
+          ronda:            2,
+          origenOnline:     true,
+          onlineEstado:     'SIENDO_CARGADA',
+          marcadorPlayerId: marcadorId,
+        },
+      })
     : null
 
   return NextResponse.json({ jugScId: scJug.id, yoScId: scYo?.id ?? null })
