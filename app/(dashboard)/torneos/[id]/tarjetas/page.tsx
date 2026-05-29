@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { requireSession } from '@/lib/session'
 import NuevaTarjetaButton from './NuevaTarjetaButton'
 import DeleteScorecardButton from './DeleteScorecardButton'
+import TarjetasOnlineTable from './TarjetasOnlineTable'
 
 export default async function TarjetasPage(props: { params: Promise<{ id: string }> }) {
   const { id } = await props.params
@@ -215,6 +216,9 @@ export default async function TarjetasPage(props: { params: Promise<{ id: string
           </table>
         )}
       </div>
+
+      {/* Tarjetas Online */}
+      <TarjetasOnlineTable torneoId={torneo.id} canEdit={canEdit} holes={torneo.course.holes.map(h => h.numero)} />
 
       {/* Tarjetas de jugadores no en planilla (walk-ins) */}
       {torneo.scorecards.filter(sc => !jugadoresMap.has(sc.playerId)).length > 0 && (

@@ -148,10 +148,11 @@ model Player {
   activo      Boolean    @default(true)
   aagId       String?
 
-  teeTimeSlots TeeTimeSlotPlayer[]
-  scorecards   Scorecard[]
-  results      Result[]
-  user         User?
+  teeTimeSlots      TeeTimeSlotPlayer[]
+  scorecards        Scorecard[]
+  scorecardsMarker  Scorecard[]         @relation("ScorecardMarcador")
+  results           Result[]
+  user              User?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -293,21 +294,32 @@ model TeeTimeSlotPlayer {
 // ============================================================
 
 model Scorecard {
-  id             Int       @id @default(autoincrement())
-  tournamentId   Int
-  playerId       Int
-  ronda          Int       @default(1)
-  aagSubmitted   Boolean   @default(false)
-  aagSubmittedAt DateTime?
-  aagResponse    String?
+  id               Int              @id @default(autoincrement())
+  tournamentId     Int
+  playerId         Int
+  ronda            Int              @default(1)
+  aagSubmitted     Boolean          @default(false)
+  aagSubmittedAt   DateTime?
+  aagResponse      String?
+  origenOnline     Boolean          @default(false)
+  onlineEstado     OnlineEstado     @default(SIENDO_CARGADA)
+  marcadorPlayerId Int?             // jugador que cargó esta tarjeta
 
-  tournament Tournament     @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
-  player     Player         @relation(fields: [playerId], references: [id])
-  entries    ScorecardEntry[]
+  tournament  Tournament     @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  player      Player         @relation(fields: [playerId], references: [id])
+  marcador    Player?        @relation("ScorecardMarcador", fields: [marcadorPlayerId], references: [id])
+  entries     ScorecardEntry[]
 
   @@unique([tournamentId, playerId, ronda])
   @@index([tournamentId])
   @@index([playerId])
+  @@index([marcadorPlayerId])
+}
+
+enum OnlineEstado {
+  SIENDO_CARGADA
+  COMPLETA
+  VALIDADA
 }
 
 model ScorecardEntry {

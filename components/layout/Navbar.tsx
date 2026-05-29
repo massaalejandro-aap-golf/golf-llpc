@@ -14,8 +14,9 @@ const staffNavItems = [
 ]
 
 const socioNavItems = [
-  { href: '/reservas',    label: 'Reservas' },
-  { href: '/leaderboard', label: 'Leaderboard' },
+  { href: '/reservas',       label: 'Reservas' },
+  { href: '/leaderboard',    label: 'Leaderboard' },
+  { href: '/tarjeta-online', label: 'Tarjeta' },
 ]
 
 const adminItems = [
