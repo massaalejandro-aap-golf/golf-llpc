@@ -9,7 +9,7 @@ type RouteContext = { params: Promise<{ id: string }> }
 export async function GET(_req: NextRequest, { params }: RouteContext) {
   const { id } = await params
   const scorecards = await prisma.scorecard.findMany({
-    where: { tournamentId: Number(id) },
+    where: { tournamentId: Number(id), ronda: 1 },
     orderBy: { id: 'asc' },
     include: {
       player: { select: { id: true, nombre: true, apellido: true, hcpIndex: true, genero: true } },

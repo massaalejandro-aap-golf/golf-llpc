@@ -34,6 +34,7 @@ export default async function TarjetasPage(props: { params: Promise<{ id: string
         },
       },
       scorecards: {
+        where: { ronda: 1 }, // ronda=2 son tarjetas de control YO, no se muestran
         orderBy: { id: 'asc' },
         include: {
           player: { select: { id: true, nombre: true, apellido: true, matricula: true, hcpIndex: true, genero: true } },

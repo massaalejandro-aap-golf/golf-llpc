@@ -79,6 +79,7 @@ export default async function ResultadosPage(props: { params: Promise<{ id: stri
       teeDama:   { select: { slope: true, rating: true } },
       categories: { orderBy: [{ genero: 'asc' }, { nombre: 'asc' }] },
       scorecards: {
+        where: { ronda: 1 },
         include: {
           player: {
             select: { id: true, nombre: true, apellido: true, hcpIndex: true, genero: true },
