@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { login } from '@/lib/session'
+import { cookies } from 'next/headers'
 
 export async function POST(req: NextRequest) {
   const { email, password } = await req.json()
@@ -14,5 +15,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: result.error }, { status: 401 })
   }
 
-  return NextResponse.json({ ok: true })
+  // Return session token in body so native mobile apps can store it without cookie handling
+  const cookieStore = await cookies()
+  const token = cookieStore.get('golf_session')?.value ?? null
+
+  return NextResponse.json({ ok: true, token })
 }
