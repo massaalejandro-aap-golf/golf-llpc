@@ -1,11 +1,13 @@
-# Imagen oficial de Playwright — ya incluye Chromium y todas sus dependencias
-FROM mcr.microsoft.com/playwright:v1.60.0-focal
+FROM node:20
 
 WORKDIR /app
 
-# Instalar dependencias primero (cachea esta capa si no cambia package.json)
+# Instalar dependencias npm primero (cachea esta capa si no cambia package.json)
 COPY package*.json ./
 RUN npm ci
+
+# Instalar Chromium + todas sus dependencias del sistema
+RUN npx playwright install --with-deps chromium
 
 # Copiar fuentes y compilar Next.js
 COPY . .
