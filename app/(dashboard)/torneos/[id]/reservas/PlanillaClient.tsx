@@ -449,6 +449,7 @@ function SlotRow({
             <SocioReservar
               torneoId={torneoId}
               slotId={slot.id}
+              currentPlayerCount={slot.players.length}
               onRefresh={onRefresh}
             />
           ) : (
@@ -477,10 +478,12 @@ function SlotRow({
 function SocioReservar({
   torneoId,
   slotId,
+  currentPlayerCount,
   onRefresh,
 }: {
   torneoId: number
   slotId: number
+  currentPlayerCount: number
   onRefresh: () => void
 }) {
   const [open, setOpen] = useState(false)
@@ -551,7 +554,7 @@ function SocioReservar({
     const res = await fetch(`/api/torneos/${torneoId}/reservas/${slotId}/players`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ playerId }),
+      body: JSON.stringify({ playerId, expectedCount: currentPlayerCount }),
     })
     if (res.ok) {
       onRefresh()
@@ -561,6 +564,15 @@ function SocioReservar({
     } else {
       const d = await res.json()
       setError(d.error ?? 'No se pudo reservar')
+      if (d.stale) {
+        // Refrescar tras 1.5s para que el usuario lea el mensaje y vea el estado actualizado
+        setTimeout(() => {
+          onRefresh()
+          setOpen(false)
+          setMatricula('')
+          setResultado(null)
+        }, 1500)
+      }
     }
     setGuardando(false)
   }

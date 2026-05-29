@@ -8,6 +8,7 @@ type RouteContext = { params: Promise<{ id: string; slotId: string }> }
 const AddPlayerSchema = z.object({
   playerId: z.number().int().positive(),
   carro: z.boolean().default(false),
+  expectedCount: z.number().int().min(0).optional(), // para detectar race conditions
 })
 
 const MAX_RESERVAS_SOCIO = 4
@@ -55,6 +56,13 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
   if (currentCount >= torneo.jugadoresPorLinea) {
     return NextResponse.json(
       { error: `El turno ya tiene el máximo de ${torneo.jugadoresPorLinea} jugadores` },
+      { status: 409 }
+    )
+  }
+  // Race condition: si el slot cambió desde que el SOCIO abrió el formulario, rechazar
+  if (!isStaff && parsed.data.expectedCount !== undefined && currentCount !== parsed.data.expectedCount) {
+    return NextResponse.json(
+      { error: 'Este lugar ya fue reservado. Elegí otra posición.', stale: true },
       { status: 409 }
     )
   }
