@@ -275,6 +275,7 @@ model TeeTimeSlotPlayer {
   id            Int     @id @default(autoincrement())
   teeTimeSlotId    Int
   playerId         Int
+  posicion         Int?    // 1-based, posición en la línea (Jugador 1, 2, 3, 4)
   carro            Boolean @default(false)
   reservedByUserId Int?
 

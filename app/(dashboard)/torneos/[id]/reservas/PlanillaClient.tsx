@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation'
 interface SlotPlayer {
   id: number
   playerId: number
+  posicion: number | null
   carro: boolean
   reservedByUserId: number | null
   player: {
@@ -154,12 +155,12 @@ export default function PlanillaClient({ torneoId, jugadoresPorLinea, slots: ini
 
   // ── Agregar jugador ─────────────────────────────────────────────────────────
 
-  async function addPlayer(slotId: number, jugador: Jugador) {
+  async function addPlayer(slotId: number, jugador: Jugador, posicion?: number) {
     try {
       const res = await fetch(`/api/torneos/${torneoId}/reservas/${slotId}/players`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ playerId: jugador.id }),
+        body: JSON.stringify({ playerId: jugador.id, posicion }),
       })
       if (!res.ok) {
         const data = await res.json()
@@ -372,14 +373,16 @@ function SlotRow({
   onRefresh: () => void
   onToggleBloqueo: (slotId: number, bloqueado: boolean) => void
   onRemovePlayer: (slotId: number, playerId: number) => void
-  onAddPlayer: (slotId: number, jugador: Jugador) => Promise<boolean>
+  onAddPlayer: (slotId: number, jugador: Jugador, posicion?: number) => Promise<boolean>
 }) {
   const [searchingIdx, setSearchingIdx] = useState<number | null>(null)
 
-  const plazas: (SlotPlayer | null)[] = Array.from(
-    { length: jugadoresPorLinea },
-    (_, i) => slot.players[i] ?? null
-  )
+  // Si todos los players tienen posicion guardada, usarla; si no, caer en orden de inserción
+  const usarPosicion = slot.players.every((p) => p.posicion != null)
+  const plazas: (SlotPlayer | null)[] = Array.from({ length: jugadoresPorLinea }, (_, i) => {
+    if (usarPosicion) return slot.players.find((p) => p.posicion === i + 1) ?? null
+    return slot.players[i] ?? null
+  })
 
   return (
     <tr className={`hover:bg-gray-50/60 transition-colors ${slot.bloqueado ? 'opacity-40' : ''}`}>
@@ -431,6 +434,7 @@ function SlotRow({
               <PlayerSearch
                 torneoId={torneoId}
                 slotId={slot.id}
+                posicion={idx + 1}
                 onAdd={onAddPlayer}
                 onClose={() => setSearchingIdx(null)}
               />
@@ -449,6 +453,7 @@ function SlotRow({
             <SocioReservar
               torneoId={torneoId}
               slotId={slot.id}
+              posicion={idx + 1}
               currentPlayerCount={slot.players.length}
               onRefresh={onRefresh}
             />
@@ -478,11 +483,13 @@ function SlotRow({
 function SocioReservar({
   torneoId,
   slotId,
+  posicion,
   currentPlayerCount,
   onRefresh,
 }: {
   torneoId: number
   slotId: number
+  posicion: number
   currentPlayerCount: number
   onRefresh: () => void
 }) {
@@ -554,7 +561,7 @@ function SocioReservar({
     const res = await fetch(`/api/torneos/${torneoId}/reservas/${slotId}/players`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ playerId, expectedCount: currentPlayerCount }),
+      body: JSON.stringify({ playerId, posicion, expectedCount: currentPlayerCount }),
     })
     if (res.ok) {
       onRefresh()
@@ -675,12 +682,14 @@ type AagResult = {
 function PlayerSearch({
   torneoId,
   slotId,
+  posicion,
   onAdd,
   onClose,
 }: {
   torneoId: number
   slotId: number
-  onAdd: (slotId: number, jugador: Jugador) => Promise<boolean>
+  posicion: number
+  onAdd: (slotId: number, jugador: Jugador, posicion?: number) => Promise<boolean>
   onClose: () => void
 }) {
   const [query, setQuery]         = useState('')
@@ -743,7 +752,7 @@ function PlayerSearch({
   // Agregar jugador que ya existe en DB
   async function handleSelect(jugador: Jugador) {
     setAdding(true)
-    const ok = await onAdd(slotId, jugador)
+    const ok = await onAdd(slotId, jugador, posicion)
     if (ok) onClose()
     else setAdding(false)
   }
@@ -783,7 +792,7 @@ function PlayerSearch({
         hcpIndex:  newPlayer.hcpIndex,
         genero:    newPlayer.genero,
       }
-      const ok = await onAdd(slotId, jugador)
+      const ok = await onAdd(slotId, jugador, posicion)
       if (ok) onClose()
       else setAdding(false)
     } catch {
@@ -804,7 +813,7 @@ function PlayerSearch({
       hcpIndex:  aag.hcpIndex ?? 36,
       genero:    aag.genero,
     }
-    const ok = await onAdd(slotId, jugador)
+    const ok = await onAdd(slotId, jugador, posicion)
     if (ok) onClose()
     else setAdding(false)
   }

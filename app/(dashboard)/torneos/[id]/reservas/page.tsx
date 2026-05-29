@@ -23,6 +23,7 @@ export default async function ReservasPage(props: { params: Promise<{ id: string
             select: {
               id: true,
               playerId: true,
+              posicion: true,
               carro: true,
               reservedByUserId: true,
               player: {

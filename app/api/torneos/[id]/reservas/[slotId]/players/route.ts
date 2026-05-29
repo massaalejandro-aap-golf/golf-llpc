@@ -8,7 +8,8 @@ type RouteContext = { params: Promise<{ id: string; slotId: string }> }
 const AddPlayerSchema = z.object({
   playerId: z.number().int().positive(),
   carro: z.boolean().default(false),
-  expectedCount: z.number().int().min(0).optional(), // para detectar race conditions
+  posicion: z.number().int().min(1).max(4).optional(),
+  expectedCount: z.number().int().min(0).optional(),
 })
 
 const MAX_RESERVAS_SOCIO = 4
@@ -59,7 +60,20 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
       { status: 409 }
     )
   }
-  // Race condition: si el slot cambió desde que el SOCIO abrió el formulario, rechazar
+  // Verificar que la posición específica no esté ya ocupada
+  if (parsed.data.posicion != null) {
+    const posOcupada = await prisma.teeTimeSlotPlayer.findFirst({
+      where: { teeTimeSlotId: Number(slotId), posicion: parsed.data.posicion },
+    })
+    if (posOcupada) {
+      return NextResponse.json(
+        { error: 'Este lugar ya fue reservado. Elegí otra posición.', stale: true },
+        { status: 409 }
+      )
+    }
+  }
+
+  // Race condition genérica: si el slot cambió desde que el SOCIO abrió el formulario
   if (!isStaff && parsed.data.expectedCount !== undefined && currentCount !== parsed.data.expectedCount) {
     return NextResponse.json(
       { error: 'Este lugar ya fue reservado. Elegí otra posición.', stale: true },
@@ -85,6 +99,7 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
     data: {
       teeTimeSlotId: Number(slotId),
       playerId: parsed.data.playerId,
+      posicion: parsed.data.posicion ?? null,
       carro: parsed.data.carro,
       reservedByUserId: isStaff ? null : session.id,
     },
