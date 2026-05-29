@@ -35,28 +35,64 @@ function strokesOnHole(chp: number, si: number, n: number) {
   return Math.floor(chp / n) + (si <= chp % n ? 1 : 0)
 }
 
-// Colores gross - definido fuera del componente para evitar remounts
-function CeldaGolpes({ golpes, par, strokes, onChange, disabled, inconsistente }: {
-  golpes: number | undefined; par: number; strokes: number; onChange: (v: number) => void; disabled: boolean; inconsistente?: boolean
+// Definido a nivel módulo para evitar remounts
+function CeldaGolpes({ golpes, par, onChange, onClear, disabled, inconsistente }: {
+  golpes: number | undefined
+  par: number
+  onChange: (v: number) => void
+  onClear: () => void
+  disabled: boolean
+  inconsistente?: boolean
 }) {
+  const [raw, setRaw] = useState(golpes != null ? String(golpes) : '')
+
+  // Sincronizar cuando el valor externo cambia (ej: carga inicial)
+  useEffect(() => { setRaw(golpes != null ? String(golpes) : '') }, [golpes])
+
   const diff = golpes != null ? golpes - par : null
   const color = inconsistente
     ? 'animate-pulse bg-orange-200 border-orange-400'
-    : diff == null ? '' :
+    : diff == null ? 'bg-white' :
       diff <= -2 ? 'bg-yellow-200' : diff === -1 ? 'bg-green-200' :
       diff === 0 ? 'bg-white' : diff === 1 ? 'bg-red-100' : 'bg-red-200'
 
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const val = e.target.value.replace(/[^0-9]/g, '')
+    setRaw(val)
+    const n = parseInt(val)
+    if (!isNaN(n) && n >= 1 && n <= 20) onChange(n)
+  }
+
+  function handleBlur() {
+    const n = parseInt(raw)
+    if (isNaN(n) || n < 1 || n > 20) {
+      // Valor inválido — restaurar al último valor guardado
+      setRaw(golpes != null ? String(golpes) : '')
+    }
+  }
+
   return (
-    <div className="relative">
+    <div className="relative flex items-center gap-1">
       <input
-        type="number"
+        type="text"
         inputMode="numeric"
-        min={1} max={20}
-        value={golpes ?? ''}
-        onChange={(e) => { const v = parseInt(e.target.value); if (v >= 1 && v <= 20) onChange(v) }}
+        pattern="[0-9]*"
+        value={raw}
+        onChange={handleChange}
+        onBlur={handleBlur}
         disabled={disabled}
         className={`w-full text-center font-bold text-lg border rounded-lg py-2 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:bg-gray-50 ${color} ${inconsistente ? '' : 'border-gray-300'}`}
       />
+      {golpes != null && !disabled && (
+        <button
+          type="button"
+          onClick={() => { setRaw(''); onClear() }}
+          className="absolute right-1 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center rounded-full bg-gray-400 hover:bg-gray-600 text-white text-xs leading-none"
+          tabIndex={-1}
+        >
+          ×
+        </button>
+      )}
       {inconsistente && (
         <span className="absolute -top-1 -right-1 w-3 h-3 bg-orange-500 rounded-full animate-ping" />
       )}
@@ -102,8 +138,10 @@ export default function TarjetaOnlineForm({
   const vuelta = isEighteen ? holes.slice(9) : []
   const holeList = vista === 'IDA' ? ida : vuelta
 
-  const setJug = useCallback((holeId: number, v: number) => setScoresJug((p) => ({ ...p, [holeId]: v })), [])
-  const setYo  = useCallback((holeId: number, v: number) => setScoresYo((p) => ({ ...p, [holeId]: v })), [])
+  const setJug   = useCallback((holeId: number, v: number) => setScoresJug((p) => ({ ...p, [holeId]: v })), [])
+  const clearJug = useCallback((holeId: number) => setScoresJug((p) => { const n = { ...p }; delete n[holeId]; return n }), [])
+  const setYo    = useCallback((holeId: number, v: number) => setScoresYo((p) => ({ ...p, [holeId]: v })), [])
+  const clearYo  = useCallback((holeId: number) => setScoresYo((p) => { const n = { ...p }; delete n[holeId]; return n }), [])
 
   async function handleGuardar() {
     setSaving(true)
@@ -253,7 +291,7 @@ export default function TarjetaOnlineForm({
                 {strJug > 0 ? `+${strJug}` : '—'}
               </div>
               <div className="py-1.5 px-1 border-l border-gray-100">
-                <CeldaGolpes golpes={scoresJug[h.id]} par={h.par} strokes={strJug} onChange={(v) => setJug(h.id, v)} disabled={!canEdit} inconsistente={inconsistente} />
+                <CeldaGolpes golpes={scoresJug[h.id]} par={h.par} onChange={(v) => setJug(h.id, v)} onClear={() => clearJug(h.id)} disabled={!canEdit} inconsistente={inconsistente} />
                 {inconsistente && (
                   <div className="text-xs text-orange-500 text-center mt-0.5">
                     Jugador: {crossGolpes}
@@ -265,7 +303,7 @@ export default function TarjetaOnlineForm({
                   {strYo > 0 ? `+${strYo}` : '—'}
                 </div>
                 <div className="py-1.5 px-1 border-l border-gray-100">
-                  <CeldaGolpes golpes={scoresYo[h.id]} par={h.parYo} strokes={strYo} onChange={(v) => setYo(h.id, v)} disabled={!canEdit} />
+                  <CeldaGolpes golpes={scoresYo[h.id]} par={h.parYo} onChange={(v) => setYo(h.id, v)} onClear={() => clearYo(h.id)} disabled={!canEdit} />
                 </div>
               </>}
             </div>

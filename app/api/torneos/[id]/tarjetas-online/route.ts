@@ -13,7 +13,7 @@ export async function GET(_req: NextRequest, { params }: Ctx) {
 
   const { id } = await params
   const scorecards = await prisma.scorecard.findMany({
-    where: { tournamentId: Number(id), origenOnline: true, ronda: 1 },
+    where: { tournamentId: Number(id), origenOnline: true },
     orderBy: { id: 'desc' },
     include: {
       player:   { select: { matricula: true, nombre: true, apellido: true } },
