@@ -49,7 +49,8 @@ export default function Navbar({ user }: { user: SessionUser }) {
         <nav className="bg-green-700 text-white shadow-md">
           <div className="px-4 h-12 flex items-center justify-between">
             <Link href="/reservas" className="flex items-center gap-2 font-bold">
-              <span>⛳</span>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/logo.png" alt="LLPC" className="w-8 h-8 object-contain rounded bg-white/10 p-0.5" />
               <span className="text-sm">La Lucila Polo Club</span>
             </Link>
             <button
@@ -112,7 +113,8 @@ export default function Navbar({ user }: { user: SessionUser }) {
         <div className="flex items-center justify-between h-14">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 font-bold text-lg">
-            <span>⛳</span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.png" alt="LLPC" className="w-9 h-9 object-contain rounded bg-white/10 p-0.5" />
             <span className="hidden sm:inline">La Lucila Polo Club</span>
             <span className="sm:hidden text-sm">LLPC Golf</span>
           </Link>

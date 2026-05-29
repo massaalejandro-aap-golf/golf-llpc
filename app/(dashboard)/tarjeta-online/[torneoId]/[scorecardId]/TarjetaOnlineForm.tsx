@@ -81,7 +81,7 @@ function CeldaGolpes({ golpes, par, onChange, onClear, disabled, inconsistente }
         onChange={handleChange}
         onBlur={handleBlur}
         disabled={disabled}
-        className={`w-full text-center font-bold text-lg border rounded-lg py-2 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:bg-gray-50 ${color} ${inconsistente ? '' : 'border-gray-300'}`}
+        className={`w-full text-center font-bold text-xl text-gray-900 border rounded-lg py-2.5 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:bg-gray-50 disabled:text-gray-400 ${color} ${inconsistente ? '' : 'border-gray-300'}`}
       />
       {golpes != null && !disabled && (
         <button
