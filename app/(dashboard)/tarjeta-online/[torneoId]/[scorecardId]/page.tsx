@@ -43,9 +43,10 @@ export default async function TarjetaOnlinePage(props: {
   }
 
   // Scorecard propia del marcador (YO) si existe
+  // La tarjeta YO del marcador es ronda=2 (control personal, no se envía al torneo)
   const scYo = sc.marcadorPlayerId && sc.marcadorPlayerId !== sc.playerId
     ? await prisma.scorecard.findUnique({
-        where: { tournamentId_playerId_ronda: { tournamentId: Number(torneoId), playerId: sc.marcadorPlayerId, ronda: 1 } },
+        where: { tournamentId_playerId_ronda: { tournamentId: Number(torneoId), playerId: sc.marcadorPlayerId, ronda: 2 } },
         include: { entries: { select: { holeId: true, golpes: true } } },
       })
     : null
