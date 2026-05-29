@@ -318,6 +318,7 @@ export default function PlanillaClient({ torneoId, jugadoresPorLinea, slots: ini
                   </th>
                 ))}
                 {canEdit && <th className="w-10 px-2 py-2.5" />}
+                {socioPlayerId && <th className="w-28 px-2 py-2.5" />}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
@@ -443,17 +444,6 @@ function SlotRow({
                   ×
                 </button>
               )}
-              {/* SOCIO cancela su propia reserva */}
-              {!canEdit && sp.playerId === socioPlayerId && !slot.bloqueado && (
-                <button
-                  onClick={handleCancelar}
-                  disabled={reservando}
-                  className="ml-1 text-xs text-red-400 hover:text-red-600 disabled:opacity-50 flex-shrink-0"
-                  title="Cancelar reserva"
-                >
-                  ×
-                </button>
-              )}
             </div>
           ) : canEdit && !slot.bloqueado ? (
             searchingIdx === idx ? (
@@ -473,23 +463,12 @@ function SlotRow({
                 </span>
               </button>
             )
-          ) : !canEdit && socioPlayerId && !miPlaza && !slotLleno && !slot.bloqueado && idx === slot.players.length ? (
-            /* Primera plaza vacía: botón Reservar para SOCIO */
-            puedeReservar ? (
-              <button
-                onClick={handleReservar}
-                disabled={reservando}
-                className="text-xs bg-green-50 hover:bg-green-100 border border-green-200 text-green-700 rounded px-2.5 py-0.5 disabled:opacity-50 transition-colors"
-              >
-                {reservando ? '...' : 'Reservar'}
-              </button>
-            ) : null
           ) : (
             <span className="text-xs text-gray-200">—</span>
           )}
         </td>
       ))}
-      {/* Botón bloqueo */}
+      {/* Botón bloqueo (admin) */}
       {canEdit && (
         <td className="px-2 py-3 align-top">
           <button
@@ -499,6 +478,28 @@ function SlotRow({
           >
             {slot.bloqueado ? '🔒' : '🔓'}
           </button>
+        </td>
+      )}
+      {/* Acción SOCIO: Reservar o Cancelar */}
+      {socioPlayerId && (
+        <td className="px-3 py-2.5 align-middle">
+          {!slot.bloqueado && miPlaza ? (
+            <button
+              onClick={handleCancelar}
+              disabled={reservando}
+              className="text-xs text-red-500 hover:text-red-700 border border-red-200 hover:border-red-400 bg-red-50 hover:bg-red-100 rounded px-2.5 py-1 disabled:opacity-50 transition-colors"
+            >
+              {reservando ? '...' : 'Cancelar'}
+            </button>
+          ) : !slot.bloqueado && !miPlaza && !slotLleno && puedeReservar ? (
+            <button
+              onClick={handleReservar}
+              disabled={reservando}
+              className="text-xs text-green-700 border border-green-200 bg-green-50 hover:bg-green-100 rounded px-2.5 py-1 disabled:opacity-50 transition-colors"
+            >
+              {reservando ? '...' : 'Reservar'}
+            </button>
+          ) : null}
         </td>
       )}
     </tr>

@@ -64,18 +64,18 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
   }
 
   // Build slot datetimes: use tournament date + input time
+  // Argentina is UTC-3 (no DST since 2008), so add 3h to convert local → UTC
   const fecha = new Date(torneo.fecha)
   const [hh, mm] = horaInicio.split(':').map(Number)
+  const ARGENTINA_UTC_OFFSET = 3
 
-  const baseTime = new Date(
+  const baseTime = new Date(Date.UTC(
     fecha.getUTCFullYear(),
     fecha.getUTCMonth(),
     fecha.getUTCDate(),
-    hh,
-    mm,
-    0,
-    0
-  )
+    hh + ARGENTINA_UTC_OFFSET,
+    mm
+  ))
 
   const slotsData = Array.from({ length: cantidad }, (_, i) => ({
     tournamentId: torneoId,
