@@ -26,15 +26,11 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
     return NextResponse.json({ error: 'Datos inválidos' }, { status: 400 })
   }
 
-  // SOCIO solo puede agregarse a sí mismo
+  // SOCIO: verificar límite de 4 reservas por torneo (por usuario que reserva)
   if (!isStaff) {
-    if (!session.playerId || parsed.data.playerId !== session.playerId) {
-      return NextResponse.json({ error: 'Solo podés reservar para vos mismo' }, { status: 403 })
-    }
-    // Verificar límite de 4 reservas por torneo
     const reservasDelSocio = await prisma.teeTimeSlotPlayer.count({
       where: {
-        playerId: session.playerId,
+        reservedByUserId: session.id,
         teeTimeSlot: { tournamentId: Number(id) },
       },
     })
@@ -82,6 +78,7 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
       teeTimeSlotId: Number(slotId),
       playerId: parsed.data.playerId,
       carro: parsed.data.carro,
+      reservedByUserId: isStaff ? null : session.id,
     },
     include: {
       player: { select: { id: true, nombre: true, apellido: true, hcpIndex: true, genero: true } },
@@ -100,9 +97,15 @@ export async function DELETE(req: NextRequest, { params }: RouteContext) {
   const { searchParams } = new URL(req.url)
   const playerId = Number(searchParams.get('playerId'))
 
-  // SOCIO solo puede quitarse a sí mismo
-  if (!isStaff && (!session.playerId || playerId !== session.playerId)) {
-    return NextResponse.json({ error: 'Solo podés cancelar tu propia reserva' }, { status: 403 })
+  // SOCIO: solo puede cancelar reservas que él creó
+  if (!isStaff) {
+    const { slotId: sid } = await params
+    const entry = await prisma.teeTimeSlotPlayer.findFirst({
+      where: { teeTimeSlotId: Number(sid), playerId },
+    })
+    if (!entry || entry.reservedByUserId !== session.id) {
+      return NextResponse.json({ error: 'Solo podés cancelar reservas que hiciste vos' }, { status: 403 })
+    }
   }
 
   const { slotId } = await params

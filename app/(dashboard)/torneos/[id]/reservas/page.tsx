@@ -20,7 +20,11 @@ export default async function ReservasPage(props: { params: Promise<{ id: string
         orderBy: { hora: 'asc' },
         include: {
           players: {
-            include: {
+            select: {
+              id: true,
+              playerId: true,
+              carro: true,
+              reservedByUserId: true,
               player: {
                 select: { id: true, nombre: true, apellido: true, hcpIndex: true, genero: true },
               },
@@ -35,7 +39,9 @@ export default async function ReservasPage(props: { params: Promise<{ id: string
   if (!torneo) notFound()
 
   const canEdit = session.role === 'ADMIN' || session.role === 'COMISION'
-  const socioPlayerId = session.role === 'SOCIO' ? (session.playerId ?? null) : null
+  const isSocio = session.role === 'SOCIO'
+  const socioPlayerId = isSocio ? (session.playerId ?? null) : null
+  const socioUserId = isSocio ? session.id : null
 
   return (
     <div className="space-y-6">
@@ -75,6 +81,7 @@ export default async function ReservasPage(props: { params: Promise<{ id: string
         slots={torneo.teeTimeSlots.map((s) => ({ ...s, hora: s.hora.toISOString() }))}
         canEdit={canEdit}
         socioPlayerId={socioPlayerId}
+        socioUserId={socioUserId}
       />
     </div>
   )

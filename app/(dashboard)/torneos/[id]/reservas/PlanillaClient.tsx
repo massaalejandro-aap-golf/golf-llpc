@@ -9,6 +9,7 @@ interface SlotPlayer {
   id: number
   playerId: number
   carro: boolean
+  reservedByUserId: number | null
   player: {
     id: number
     nombre: string
@@ -42,6 +43,7 @@ interface Props {
   slots: Slot[]
   canEdit: boolean
   socioPlayerId?: number | null
+  socioUserId?: number | null
 }
 
 const MAX_RESERVAS_SOCIO = 4
@@ -54,7 +56,7 @@ function formatHora(iso: string) {
 
 // ── Componente principal ─────────────────────────────────────────────────────
 
-export default function PlanillaClient({ torneoId, jugadoresPorLinea, slots: initialSlots, canEdit, socioPlayerId }: Props) {
+export default function PlanillaClient({ torneoId, jugadoresPorLinea, slots: initialSlots, canEdit, socioPlayerId, socioUserId }: Props) {
   const router = useRouter()
   const [slots, setSlots] = useState<Slot[]>(initialSlots)
   const [loading, setLoading] = useState(false)
@@ -179,8 +181,8 @@ export default function PlanillaClient({ torneoId, jugadoresPorLinea, slots: ini
 
   const totalJugadores = slots.reduce((acc, s) => acc + s.players.length, 0)
   const slotsOcupados = slots.filter((s) => s.players.length > 0 && !s.bloqueado).length
-  const misReservas = socioPlayerId
-    ? slots.reduce((acc, s) => acc + s.players.filter((p) => p.playerId === socioPlayerId).length, 0)
+  const misReservas = socioUserId
+    ? slots.reduce((acc, s) => acc + s.players.filter((p) => p.reservedByUserId === socioUserId).length, 0)
     : 0
   const puedeReservar = !!socioPlayerId && misReservas < MAX_RESERVAS_SOCIO
 
@@ -318,7 +320,6 @@ export default function PlanillaClient({ torneoId, jugadoresPorLinea, slots: ini
                   </th>
                 ))}
                 {canEdit && <th className="w-10 px-2 py-2.5" />}
-                {socioPlayerId && <th className="w-28 px-2 py-2.5" />}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
@@ -330,6 +331,7 @@ export default function PlanillaClient({ torneoId, jugadoresPorLinea, slots: ini
                   jugadoresPorLinea={jugadoresPorLinea}
                   canEdit={canEdit}
                   socioPlayerId={socioPlayerId ?? null}
+                  socioUserId={socioUserId ?? null}
                   puedeReservar={puedeReservar}
                   onRefresh={() => router.refresh()}
                   onToggleBloqueo={toggleBloqueo}
@@ -353,6 +355,7 @@ function SlotRow({
   jugadoresPorLinea,
   canEdit,
   socioPlayerId,
+  socioUserId,
   puedeReservar,
   onRefresh,
   onToggleBloqueo,
@@ -364,6 +367,7 @@ function SlotRow({
   jugadoresPorLinea: number
   canEdit: boolean
   socioPlayerId: number | null
+  socioUserId: number | null
   puedeReservar: boolean
   onRefresh: () => void
   onToggleBloqueo: (slotId: number, bloqueado: boolean) => void
@@ -371,43 +375,11 @@ function SlotRow({
   onAddPlayer: (slotId: number, jugador: Jugador) => Promise<boolean>
 }) {
   const [searchingIdx, setSearchingIdx] = useState<number | null>(null)
-  const [reservando, setReservando] = useState(false)
 
   const plazas: (SlotPlayer | null)[] = Array.from(
     { length: jugadoresPorLinea },
     (_, i) => slot.players[i] ?? null
   )
-
-  const miPlaza = socioPlayerId ? slot.players.find((p) => p.playerId === socioPlayerId) : null
-  const slotLleno = slot.players.length >= jugadoresPorLinea
-
-  async function handleReservar() {
-    if (!socioPlayerId || reservando) return
-    setReservando(true)
-    const res = await fetch(`/api/torneos/${torneoId}/reservas/${slot.id}/players`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ playerId: socioPlayerId }),
-    })
-    if (!res.ok) {
-      const data = await res.json()
-      alert(data.error || 'No se pudo reservar')
-    } else {
-      onRefresh()
-    }
-    setReservando(false)
-  }
-
-  async function handleCancelar() {
-    if (!socioPlayerId || reservando) return
-    setReservando(true)
-    const res = await fetch(
-      `/api/torneos/${torneoId}/reservas/${slot.id}/players?playerId=${socioPlayerId}`,
-      { method: 'DELETE' }
-    )
-    if (res.ok) onRefresh()
-    setReservando(false)
-  }
 
   return (
     <tr className={`hover:bg-gray-50/60 transition-colors ${slot.bloqueado ? 'opacity-40' : ''}`}>
@@ -444,6 +416,15 @@ function SlotRow({
                   ×
                 </button>
               )}
+              {/* SOCIO: cancelar si fue él quien reservó este lugar */}
+              {!canEdit && socioUserId && sp.reservedByUserId === socioUserId && !slot.bloqueado && (
+                <SocioCancelar
+                  torneoId={torneoId}
+                  slotId={slot.id}
+                  playerId={sp.playerId}
+                  onRefresh={onRefresh}
+                />
+              )}
             </div>
           ) : canEdit && !slot.bloqueado ? (
             searchingIdx === idx ? (
@@ -463,6 +444,13 @@ function SlotRow({
                 </span>
               </button>
             )
+          ) : !canEdit && socioUserId && !slot.bloqueado && puedeReservar ? (
+            /* Plaza vacía — SOCIO puede reservar */
+            <SocioReservar
+              torneoId={torneoId}
+              slotId={slot.id}
+              onRefresh={onRefresh}
+            />
           ) : (
             <span className="text-xs text-gray-200">—</span>
           )}
@@ -480,29 +468,182 @@ function SlotRow({
           </button>
         </td>
       )}
-      {/* Acción SOCIO: Reservar o Cancelar */}
-      {socioPlayerId && (
-        <td className="px-3 py-2.5 align-middle">
-          {!slot.bloqueado && miPlaza ? (
-            <button
-              onClick={handleCancelar}
-              disabled={reservando}
-              className="text-xs text-red-500 hover:text-red-700 border border-red-200 hover:border-red-400 bg-red-50 hover:bg-red-100 rounded px-2.5 py-1 disabled:opacity-50 transition-colors"
-            >
-              {reservando ? '...' : 'Cancelar'}
-            </button>
-          ) : !slot.bloqueado && !miPlaza && !slotLleno && puedeReservar ? (
-            <button
-              onClick={handleReservar}
-              disabled={reservando}
-              className="text-xs text-green-700 border border-green-200 bg-green-50 hover:bg-green-100 rounded px-2.5 py-1 disabled:opacity-50 transition-colors"
-            >
-              {reservando ? '...' : 'Reservar'}
-            </button>
-          ) : null}
-        </td>
-      )}
     </tr>
+  )
+}
+
+// ── Botón Reservar para SOCIO (con input de matrícula) ───────────────────────
+
+function SocioReservar({
+  torneoId,
+  slotId,
+  onRefresh,
+}: {
+  torneoId: number
+  slotId: number
+  onRefresh: () => void
+}) {
+  const [open, setOpen] = useState(false)
+  const [matricula, setMatricula] = useState('')
+  const [resultado, setResultado] = useState<{ playerId: number | null; nombre: string; apellido: string; hcpIndex: number | null; genero: 'DAMA' | 'CABALLERO'; activo: boolean } | null>(null)
+  const [buscando, setBuscando] = useState(false)
+  const [guardando, setGuardando] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => { if (open) inputRef.current?.focus() }, [open])
+
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const val = e.target.value.replace(/\D/g, '')
+    setMatricula(val)
+    setResultado(null)
+    setError(null)
+    if (timerRef.current) clearTimeout(timerRef.current)
+    if (val.length >= 4) {
+      timerRef.current = setTimeout(() => buscarMatricula(val), 400)
+    }
+  }
+
+  async function buscarMatricula(mat: string) {
+    setBuscando(true)
+    try {
+      const res = await fetch(`/api/aag/matricula?id=${mat}`)
+      if (res.ok) {
+        setResultado(await res.json())
+      } else {
+        setError('Matrícula no encontrada')
+      }
+    } catch { setError('Error de conexión') }
+    finally { setBuscando(false) }
+  }
+
+  async function handleConfirmar() {
+    if (!resultado) return
+    setGuardando(true)
+    setError(null)
+
+    let playerId = resultado.playerId
+    // Si no existe en DB, lo importamos primero
+    if (!playerId) {
+      const cr = await fetch('/api/jugadores', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          matricula,
+          nombre: resultado.nombre,
+          apellido: resultado.apellido,
+          hcpIndex: resultado.hcpIndex ?? 36,
+          genero: resultado.genero,
+          tipo: 'INVITADO',
+          activo: true,
+        }),
+      })
+      if (!cr.ok) {
+        const d = await cr.json()
+        setError(d.error ?? 'Error al crear jugador')
+        setGuardando(false)
+        return
+      }
+      playerId = (await cr.json()).id
+    }
+
+    const res = await fetch(`/api/torneos/${torneoId}/reservas/${slotId}/players`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ playerId }),
+    })
+    if (res.ok) {
+      onRefresh()
+      setOpen(false)
+      setMatricula('')
+      setResultado(null)
+    } else {
+      const d = await res.json()
+      setError(d.error ?? 'No se pudo reservar')
+    }
+    setGuardando(false)
+  }
+
+  if (!open) {
+    return (
+      <button
+        onClick={() => setOpen(true)}
+        className="text-xs text-green-700 border border-green-200 bg-green-50 hover:bg-green-100 rounded px-2.5 py-0.5 transition-colors"
+      >
+        Reservar
+      </button>
+    )
+  }
+
+  return (
+    <div className="space-y-1.5">
+      <div className="flex items-center gap-1">
+        <input
+          ref={inputRef}
+          type="text"
+          inputMode="numeric"
+          value={matricula}
+          onChange={handleChange}
+          placeholder="Matrícula..."
+          className="w-28 px-2 py-1 text-xs border border-green-300 rounded focus:outline-none focus:ring-1 focus:ring-green-500"
+          onKeyDown={(e) => e.key === 'Escape' && (setOpen(false), setMatricula(''), setResultado(null))}
+        />
+        <button onClick={() => { setOpen(false); setMatricula(''); setResultado(null); setError(null) }} className="text-gray-400 hover:text-gray-600 text-xs">✕</button>
+      </div>
+      {buscando && <p className="text-xs text-gray-400">Buscando...</p>}
+      {error && <p className="text-xs text-red-500">{error}</p>}
+      {resultado && !buscando && (
+        <div className="bg-white border border-gray-200 rounded p-2 shadow-sm w-56">
+          <p className="text-xs font-semibold text-gray-900">{resultado.apellido}, {resultado.nombre}</p>
+          <p className="text-xs text-gray-500">HCP {resultado.hcpIndex?.toFixed(1) ?? '—'}{!resultado.activo && ' · Inactivo'}</p>
+          <button
+            onClick={handleConfirmar}
+            disabled={guardando || !resultado.activo}
+            className="mt-1.5 w-full text-xs bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white rounded py-1 transition-colors"
+          >
+            {guardando ? 'Reservando...' : 'Confirmar reserva'}
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ── Botón Cancelar reserva (SOCIO) ────────────────────────────────────────────
+
+function SocioCancelar({
+  torneoId,
+  slotId,
+  playerId,
+  onRefresh,
+}: {
+  torneoId: number
+  slotId: number
+  playerId: number
+  onRefresh: () => void
+}) {
+  const [loading, setLoading] = useState(false)
+
+  async function handleCancelar() {
+    if (!confirm('¿Cancelar esta reserva?')) return
+    setLoading(true)
+    const res = await fetch(`/api/torneos/${torneoId}/reservas/${slotId}/players?playerId=${playerId}`, {
+      method: 'DELETE',
+    })
+    if (res.ok) onRefresh()
+    setLoading(false)
+  }
+
+  return (
+    <button
+      onClick={handleCancelar}
+      disabled={loading}
+      className="ml-1 text-xs text-red-400 hover:text-red-600 disabled:opacity-50 border border-red-200 rounded px-1.5 py-0.5 transition-colors"
+      title="Cancelar reserva"
+    >
+      {loading ? '...' : 'Cancelar'}
+    </button>
   )
 }
 
