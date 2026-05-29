@@ -42,7 +42,7 @@ export default async function LeaderboardPage() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-green-800">Leaderboard</h1>
-        <p className="text-gray-700 text-sm mt-0.5 font-medium">
+        <p className="text-green-700 text-sm mt-0.5 font-medium">
           Resultados de todos los torneos — tocá para desplegar
         </p>
       </div>
