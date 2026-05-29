@@ -297,7 +297,7 @@ export default function PlanillaClient({ torneoId, jugadoresPorLinea, slots: ini
         </div>
       )}
 
-      {/* Tabla de turnos */}
+      {/* Turnos */}
       {slots.length === 0 ? (
         !showGenForm && (
           <div className="text-center py-16 text-gray-400">
@@ -305,18 +305,32 @@ export default function PlanillaClient({ torneoId, jugadoresPorLinea, slots: ini
             <p>No hay turnos. Generá la planilla para comenzar.</p>
           </div>
         )
+      ) : socioPlayerId ? (
+        /* ── Vista CARDS para SOCIO (mobile-first) ── */
+        <div className="space-y-3">
+          {slots.map((slot) => (
+            <SlotCard
+              key={slot.id}
+              slot={slot}
+              torneoId={torneoId}
+              jugadoresPorLinea={jugadoresPorLinea}
+              socioPlayerId={socioPlayerId}
+              socioUserId={socioUserId ?? null}
+              puedeReservar={puedeReservar}
+              onRefresh={() => router.refresh()}
+            />
+          ))}
+        </div>
       ) : (
-        <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+        /* ── Vista TABLA para admin (desktop) ── */
+        <div className="bg-white rounded-xl border border-gray-100 overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-gray-50 border-b border-gray-100">
                 <th className="text-left px-4 py-2.5 font-semibold text-gray-600 w-20">Hora</th>
                 <th className="text-left px-4 py-2.5 font-semibold text-gray-600 w-14 hidden sm:table-cell">Hoyo</th>
                 {Array.from({ length: jugadoresPorLinea }, (_, i) => (
-                  <th
-                    key={i}
-                    className={`text-left px-4 py-2.5 font-semibold text-gray-500 text-xs uppercase tracking-wide${i > 0 ? ' border-l border-gray-100' : ''}`}
-                  >
+                  <th key={i} className={`text-left px-4 py-2.5 font-semibold text-gray-500 text-xs uppercase tracking-wide${i > 0 ? ' border-l border-gray-100' : ''}`}>
                     Jugador {i + 1}
                   </th>
                 ))}
@@ -331,9 +345,9 @@ export default function PlanillaClient({ torneoId, jugadoresPorLinea, slots: ini
                   torneoId={torneoId}
                   jugadoresPorLinea={jugadoresPorLinea}
                   canEdit={canEdit}
-                  socioPlayerId={socioPlayerId ?? null}
-                  socioUserId={socioUserId ?? null}
-                  puedeReservar={puedeReservar}
+                  socioPlayerId={null}
+                  socioUserId={null}
+                  puedeReservar={false}
                   onRefresh={() => router.refresh()}
                   onToggleBloqueo={toggleBloqueo}
                   onRemovePlayer={removePlayer}
@@ -342,6 +356,92 @@ export default function PlanillaClient({ torneoId, jugadoresPorLinea, slots: ini
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ── Card de turno para SOCIO (mobile) ───────────────────────────────────────
+
+function SlotCard({
+  slot, torneoId, jugadoresPorLinea, socioPlayerId, socioUserId, puedeReservar, onRefresh,
+}: {
+  slot: Slot; torneoId: number; jugadoresPorLinea: number
+  socioPlayerId: number; socioUserId: number | null
+  puedeReservar: boolean; onRefresh: () => void
+}) {
+  const lleno = slot.players.length >= jugadoresPorLinea
+  const miPlaza = slot.players.find((p) => p.playerId === socioPlayerId)
+  const libres = jugadoresPorLinea - slot.players.length
+
+  if (slot.bloqueado) return null // no mostrar slots bloqueados al SOCIO
+
+  return (
+    <div className={`bg-white rounded-xl border shadow-sm p-4 ${miPlaza ? 'border-green-300' : 'border-gray-200'}`}>
+      {/* Hora + estado */}
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-3">
+          <span className="text-xl font-bold text-green-800">{formatHora(slot.hora)}</span>
+          <span className="text-xs text-gray-500">Hoyo {slot.hoyoSalida}</span>
+        </div>
+        {miPlaza ? (
+          <span className="text-xs font-semibold bg-green-100 text-green-700 px-2.5 py-1 rounded-full">✓ Reservado</span>
+        ) : lleno ? (
+          <span className="text-xs font-semibold bg-gray-100 text-gray-500 px-2.5 py-1 rounded-full">Completo</span>
+        ) : (
+          <span className="text-xs font-semibold bg-blue-50 text-blue-600 px-2.5 py-1 rounded-full">{libres} lugar{libres !== 1 ? 'es' : ''} libre{libres !== 1 ? 's' : ''}</span>
+        )}
+      </div>
+
+      {/* Jugadores ya inscriptos */}
+      {slot.players.length > 0 && (
+        <div className="space-y-1.5 mb-3">
+          {Array.from({ length: jugadoresPorLinea }, (_, i) => {
+            const sp = slot.players.find((p) => p.posicion === i + 1) ?? slot.players[i]
+            if (!sp) return null
+            const esYo = sp.playerId === socioPlayerId
+            return (
+              <div key={i} className={`flex items-center gap-2 text-sm rounded-lg px-3 py-1.5 ${esYo ? 'bg-green-50' : 'bg-gray-50'}`}>
+                <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0 ${esYo ? 'bg-green-600' : 'bg-gray-400'}`}>{i + 1}</span>
+                <span className={`font-medium ${esYo ? 'text-green-700' : 'text-gray-800'}`}>
+                  {sp.player.apellido}, {sp.player.nombre}
+                  {esYo && <span className="ml-1 text-xs text-green-500">(vos)</span>}
+                </span>
+                <span className="ml-auto text-xs text-gray-400">{sp.player.hcpIndex.toFixed(1)}</span>
+                {esYo && socioUserId && sp.reservedByUserId === socioUserId && (
+                  <SocioCancelar torneoId={torneoId} slotId={slot.id} playerId={sp.playerId} onRefresh={onRefresh} />
+                )}
+              </div>
+            )
+          })}
+        </div>
+      )}
+
+      {/* Plazas libres con botón Reservar */}
+      {!lleno && (
+        <div className="space-y-1.5">
+          {Array.from({ length: jugadoresPorLinea }, (_, i) => {
+            const posicion = i + 1
+            const ocupada = slot.players.some((p) => (p.posicion ?? slot.players.indexOf(p) + 1) === posicion)
+            if (ocupada) return null
+            return (
+              <div key={i} className="flex items-center gap-2">
+                <span className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-gray-400 bg-gray-100 flex-shrink-0">{posicion}</span>
+                {!miPlaza && puedeReservar ? (
+                  <SocioReservar
+                    torneoId={torneoId}
+                    slotId={slot.id}
+                    posicion={posicion}
+                    currentPlayerCount={slot.players.length}
+                    onRefresh={onRefresh}
+                  />
+                ) : (
+                  <span className="text-sm text-gray-300 italic">Libre</span>
+                )}
+              </div>
+            )
+          })}
         </div>
       )}
     </div>

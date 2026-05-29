@@ -47,17 +47,17 @@ export default async function ReservasPage(props: { params: Promise<{ id: string
   return (
     <div className="space-y-6">
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-sm text-gray-500">
-        <Link href="/reservas" className="hover:text-green-700">Reservas</Link>
-        <span>/</span>
-        <span className="text-gray-700 font-medium truncate max-w-[200px]">{torneo.nombre}</span>
+      <div className="flex items-center gap-2 text-sm text-green-700 font-medium">
+        <Link href="/reservas" className="hover:text-green-900">Reservas</Link>
+        <span className="text-gray-400">/</span>
+        <span className="text-gray-800 font-semibold truncate max-w-[200px]">{torneo.nombre}</span>
       </div>
 
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Planilla de reservas</h1>
-          <p className="text-gray-500 text-sm mt-0.5">
+          <h1 className="text-2xl font-bold text-green-800">Planilla de reservas</h1>
+          <p className="text-gray-700 font-medium text-sm mt-0.5">
             {torneo.nombre} ·{' '}
             {new Date(torneo.fecha).toLocaleDateString('es-AR', {
               weekday: 'long',
@@ -68,9 +68,9 @@ export default async function ReservasPage(props: { params: Promise<{ id: string
         </div>
         <Link
           href={`/torneos/${torneo.id}`}
-          className="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1"
+          className="text-sm text-green-700 hover:text-green-900 font-medium flex items-center gap-1 shrink-0"
         >
-          ← Volver al torneo
+          ← Volver
         </Link>
       </div>
 
