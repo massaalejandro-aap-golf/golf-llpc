@@ -70,30 +70,28 @@ export default function SeleccionarMarcadoClient({ torneo, jugadores, socioPlaye
     <div className="max-w-md mx-auto space-y-6">
       {/* Header */}
       <div className="bg-green-700 text-white rounded-xl p-5 text-center">
-        <p className="text-xs uppercase tracking-widest text-green-300 mb-1">Carga Online de Tarjeta</p>
+        <p className="text-xs uppercase tracking-widest text-green-200 mb-1">Carga Online de Tarjeta</p>
         <p className="font-bold text-lg">{torneo.nombre}</p>
-        <p className="text-sm text-green-200 capitalize">{fecha}</p>
+        <p className="text-sm text-green-100 capitalize">{fecha}</p>
       </div>
 
       {/* Instrucción */}
-      <div className="text-center space-y-1">
-        <p className="font-semibold text-gray-700 text-sm uppercase tracking-wide">
+      <div className="bg-white rounded-xl p-5 space-y-3 border border-gray-200">
+        <p className="font-bold text-green-800 text-base uppercase tracking-wide text-center">
           Ingresá la matrícula del jugador<br />al que le llevás la tarjeta
         </p>
-        <div className="flex items-center gap-2 mt-3">
-          <input
-            type="text"
-            inputMode="numeric"
-            value={matricula}
-            onChange={(e) => setMatricula(e.target.value.replace(/\D/g, ''))}
-            placeholder="Matrícula..."
-            className="flex-1 text-center text-xl font-bold border-2 border-gray-300 focus:border-green-500 rounded-xl px-4 py-3 focus:outline-none"
-          />
-        </div>
-        {buscando && <p className="text-sm text-gray-400">Buscando...</p>}
-        {errorBusq && <p className="text-sm text-red-500">{errorBusq}</p>}
+        <input
+          type="text"
+          inputMode="numeric"
+          value={matricula}
+          onChange={(e) => setMatricula(e.target.value.replace(/\D/g, ''))}
+          placeholder="Matrícula..."
+          className="w-full text-center text-2xl font-bold bg-white text-gray-900 border-2 border-gray-300 focus:border-green-500 rounded-xl px-4 py-3 focus:outline-none placeholder-gray-300"
+        />
+        {buscando && <p className="text-sm text-gray-600 text-center">Buscando...</p>}
+        {errorBusq && <p className="text-sm text-red-600 font-medium text-center">{errorBusq}</p>}
         {encontrado && !buscando && (
-          <p className="text-base font-bold text-green-700">
+          <p className="text-lg font-bold text-green-700 text-center">
             {encontrado.apellido.toUpperCase()} {encontrado.nombre.toUpperCase()}
           </p>
         )}
@@ -103,7 +101,7 @@ export default function SeleccionarMarcadoClient({ torneo, jugadores, socioPlaye
       <button
         onClick={() => encontrado && iniciarCarga(encontrado)}
         disabled={!encontrado || iniciando}
-        className="w-full bg-red-500 hover:bg-red-600 disabled:bg-gray-300 text-white font-bold text-lg py-4 rounded-xl transition-colors"
+        className="w-full bg-green-700 hover:bg-green-800 disabled:bg-gray-300 disabled:text-gray-500 text-white font-bold text-lg py-4 rounded-xl transition-colors"
       >
         {iniciando ? 'Iniciando...' : 'COMENZAR LA CARGA'}
       </button>
@@ -111,7 +109,7 @@ export default function SeleccionarMarcadoClient({ torneo, jugadores, socioPlaye
       {/* Lista de jugadores del torneo */}
       {jugadores.length > 0 && (
         <div className="space-y-3">
-          <p className="text-xs text-center text-gray-400 uppercase tracking-wide">
+          <p className="text-sm text-center text-green-800 font-bold uppercase tracking-wide">
             O tocá el nombre para elegir
           </p>
           <div className="grid grid-cols-2 gap-2">
@@ -120,7 +118,7 @@ export default function SeleccionarMarcadoClient({ torneo, jugadores, socioPlaye
                 key={j.id}
                 onClick={() => iniciarCarga(j)}
                 disabled={iniciando}
-                className="bg-gray-900 hover:bg-gray-700 disabled:opacity-50 text-white font-semibold text-sm py-3 px-2 rounded-lg transition-colors truncate"
+                className="bg-green-700 hover:bg-green-800 disabled:opacity-50 text-white font-bold text-sm py-3 px-2 rounded-lg transition-colors truncate"
               >
                 {j.apellido.toUpperCase()} {j.nombre.charAt(0)}.
               </button>
