@@ -1,4 +1,5 @@
 import { requireSession } from '@/lib/session'
+import { redirect } from 'next/navigation'
 import Navbar from '@/components/layout/Navbar'
 
 export default async function DashboardLayout({
@@ -7,13 +8,14 @@ export default async function DashboardLayout({
   children: React.ReactNode
 }) {
   const session = await requireSession()
-  const isSocio = session.role === 'SOCIO'
+
+  // SOCIOs usan la versión mobile
+  if (session.role === 'SOCIO') redirect('/mobile')
 
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar user={session} />
-      {/* pb-20 en mobile para SOCIO (espacio para bottom nav fija de 64px) */}
-      <main className={`flex-1 container mx-auto px-4 py-6 max-w-7xl ${isSocio ? 'pb-24 sm:pb-6' : ''}`}>
+      <main className="flex-1 container mx-auto px-4 py-6 max-w-7xl">
         {children}
       </main>
     </div>
