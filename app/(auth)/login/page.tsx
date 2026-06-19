@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Suspense } from 'react'
+import Image from 'next/image'
 
 function LoginForm() {
   const router = useRouter()
@@ -48,8 +49,7 @@ function LoginForm() {
       <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-sm">
         {/* Logo / Título */}
         <div className="text-center mb-8">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.png" alt="La Lucila Polo Club" className="w-24 h-24 object-contain mx-auto mb-3" />
+          <Image src="/logo.png" alt="La Lucila Polo Club" width={96} height={96} className="object-contain mx-auto mb-3" />
           <h1 className="text-2xl font-bold text-gray-900">La Lucila Polo Club</h1>
           <p className="text-sm text-gray-500 mt-1">Sistema de Golf</p>
         </div>
