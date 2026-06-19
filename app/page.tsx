@@ -3,9 +3,7 @@ import { getSession } from '@/lib/session'
 
 export default async function RootPage() {
   const session = await getSession()
-  if (session) {
-    redirect('/torneos')
-  } else {
-    redirect('/login')
-  }
+  if (!session) redirect('/login')
+  if (session.role === 'SOCIO') redirect('/mobile')
+  redirect('/torneos')
 }
