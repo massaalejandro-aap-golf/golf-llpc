@@ -21,9 +21,13 @@ export default async function MobilePage() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Header */}
-      <div className="bg-green-700 text-white px-6 pt-10 pb-8">
-        <p className="text-green-200 text-sm font-medium tracking-wide uppercase">La Lucila Golf Club</p>
-        <h1 className="text-2xl font-bold mt-1">Bienvenido, {session.nombre}</h1>
+      <div className="bg-green-700 text-white px-6 pt-10 pb-8 flex items-center gap-4">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/logo.png" alt="Logo" className="w-16 h-16 object-contain rounded-xl bg-white/10 p-1 shrink-0" />
+        <div>
+          <p className="text-green-100 text-base font-bold tracking-wide uppercase">La Lucila Polo Club</p>
+          <h1 className="text-xl font-bold mt-0.5">Bienvenido, {session.nombre}</h1>
+        </div>
       </div>
 
       {/* Menú */}
