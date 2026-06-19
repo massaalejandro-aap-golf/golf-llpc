@@ -1,10 +1,13 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { Suspense } from 'react'
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const fromParam = searchParams.get('from')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
@@ -29,7 +32,14 @@ export default function LoginPage() {
     if (!res.ok) {
       setError(data.error || 'Error al iniciar sesión')
     } else {
-      router.push('/')
+      // Si venía de /mobile o es SOCIO → ir a /mobile
+      if (fromParam) {
+        router.push(fromParam)
+      } else if (data.role === 'SOCIO') {
+        router.push('/mobile')
+      } else {
+        router.push('/')
+      }
     }
   }
 
@@ -87,5 +97,13 @@ export default function LoginPage() {
         </form>
       </div>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
   )
 }

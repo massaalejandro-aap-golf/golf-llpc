@@ -15,9 +15,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: result.error }, { status: 401 })
   }
 
-  // Return session token in body so native mobile apps can store it without cookie handling
   const cookieStore = await cookies()
   const token = cookieStore.get('golf_session')?.value ?? null
+  let role: string | null = null
+  if (token) {
+    try { role = JSON.parse(Buffer.from(token, 'base64').toString()).role } catch {}
+  }
 
-  return NextResponse.json({ ok: true, token })
+  return NextResponse.json({ ok: true, token, role })
 }

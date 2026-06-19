@@ -1,4 +1,5 @@
-import { requireSession } from '@/lib/session'
+import { getSession } from '@/lib/session'
+import { redirect } from 'next/navigation'
 import type { ReactNode } from 'react'
 
 export const metadata = {
@@ -7,7 +8,8 @@ export const metadata = {
 }
 
 export default async function MobileLayout({ children }: { children: ReactNode }) {
-  await requireSession()
+  const session = await getSession()
+  if (!session) redirect('/login?from=/mobile')
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col max-w-md mx-auto">
       {children}
