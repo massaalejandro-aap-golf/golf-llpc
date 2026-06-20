@@ -127,59 +127,68 @@ function PlayerRow({
   const medal = pos === 1 ? '🥇' : pos === 2 ? '🥈' : pos === 3 ? '🥉' : null
   const hasScores = player.holeScores.length > 0
 
+  // Scratch 18h: Pos(6) Nombre(flex) Ida(22) Vta(22) Tot(26)
+  // Regular 18h: Pos(6) Nombre(flex) HCP(22) Ida(22) Vta(22) Tot(26) Neto(26)
+  // Scratch 9h:  Pos(6) Nombre(flex) Tot(26)
+  // Regular 9h:  Pos(6) Nombre(flex) HCP(22) Tot(26) Neto(26)
+
   return (
     <div>
       <button
         onClick={() => hasScores && setOpen((v) => !v)}
         className={`w-full text-left ${hasScores ? 'active:bg-gray-50' : ''}`}
       >
-        <div className="flex items-center gap-2 px-3 py-2.5">
+        <div className="flex items-center gap-1 px-2 py-2">
           {/* Pos */}
-          <div className="w-7 text-center shrink-0">
+          <div className="w-6 text-center shrink-0">
             {medal
-              ? <span className="text-base">{medal}</span>
+              ? <span className="text-sm">{medal}</span>
               : <span className="text-xs font-bold text-gray-400">{pos}</span>
             }
           </div>
 
           {/* Nombre */}
-          <div className="flex-1 min-w-0">
-            <p className="font-semibold text-gray-900 text-sm truncate">
+          <div className="flex-1 min-w-0 px-1">
+            <p className="font-semibold text-gray-900 text-xs truncate leading-tight">
               {player.apellido}, {player.nombre}
-              {hasScores && <span className="ml-1 text-gray-300 text-xs">{open ? '▲' : '▼'}</span>}
+              {hasScores && <span className="ml-0.5 text-gray-300 text-[10px]">{open ? '▲' : '▼'}</span>}
             </p>
-            {kind === 'regular' && (
-              <p className="text-xs text-gray-400">HCP {player.hcpIndex.toFixed(1)} → <span className="text-gray-600 font-medium">{player.chcp}</span></p>
-            )}
           </div>
 
-          {/* Scores */}
+          {/* Scores — una sola línea */}
           {isStableford ? (
-            <div className="shrink-0 text-right">
-              <span className="text-base font-bold text-green-700">{player.stableford ?? '—'}</span>
-              <span className="text-xs text-gray-400 ml-0.5">pts</span>
+            <div className="shrink-0 w-14 text-right">
+              <span className="text-sm font-bold text-green-700">{player.stableford ?? '—'}</span>
+              <span className="text-[10px] text-gray-400 ml-0.5">pts</span>
             </div>
           ) : (
-            <div className="shrink-0 text-right text-xs text-gray-500 space-y-0.5">
-              {isEighteen ? (
+            <div className="shrink-0 flex items-center gap-1 text-xs">
+              {kind === 'regular' && (
+                <div className="w-[22px] text-center">
+                  <span className="text-[10px] text-gray-400 block leading-none">hcp</span>
+                  <span className="font-semibold text-gray-600">{player.chcp}</span>
+                </div>
+              )}
+              {isEighteen && (
                 <>
-                  <div className="flex gap-2 justify-end">
-                    <span>Ida <span className="font-semibold text-gray-700">{player.ida ?? '—'}</span></span>
-                    <span>Vta <span className="font-semibold text-gray-700">{player.vuelta ?? '—'}</span></span>
+                  <div className="w-[22px] text-center">
+                    <span className="text-[10px] text-gray-400 block leading-none">ida</span>
+                    <span className="font-semibold text-gray-700">{player.ida ?? '—'}</span>
                   </div>
-                  <div className="flex gap-2 justify-end">
-                    <span>Total <span className="font-bold text-gray-900">{player.gross ?? '—'}</span></span>
-                    {kind === 'regular' && (
-                      <span>Neto <span className="font-bold text-green-700">{player.neto ?? '—'}</span></span>
-                    )}
+                  <div className="w-[22px] text-center">
+                    <span className="text-[10px] text-gray-400 block leading-none">vta</span>
+                    <span className="font-semibold text-gray-700">{player.vuelta ?? '—'}</span>
                   </div>
                 </>
-              ) : (
-                <div className="flex gap-2 justify-end">
-                  <span>Total <span className="font-bold text-gray-900">{player.gross ?? '—'}</span></span>
-                  {kind === 'regular' && (
-                    <span>Neto <span className="font-bold text-green-700">{player.neto ?? '—'}</span></span>
-                  )}
+              )}
+              <div className="w-[26px] text-center">
+                <span className="text-[10px] text-gray-400 block leading-none">tot</span>
+                <span className="font-bold text-gray-900">{player.gross ?? '—'}</span>
+              </div>
+              {kind === 'regular' && (
+                <div className="w-[26px] text-center">
+                  <span className="text-[10px] text-gray-400 block leading-none">neto</span>
+                  <span className="font-bold text-green-700">{player.neto ?? '—'}</span>
                 </div>
               )}
             </div>
@@ -217,13 +226,15 @@ function GroupSection({
       </div>
 
       {/* Header columnas */}
-      <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 border-b border-gray-100 text-xs text-gray-400 font-medium">
-        <div className="w-7 text-center">Pos</div>
-        <div className="flex-1">Jugador {group.kind === 'regular' && '/ HCP'}</div>
-        {isEighteen
-          ? <div className="text-right shrink-0 w-36">Ida · Vta · Total{group.kind === 'regular' ? ' · Neto' : ''}</div>
-          : <div className="text-right shrink-0 w-24">Total{group.kind === 'regular' ? ' · Neto' : ''}</div>
-        }
+      <div className="flex items-center gap-1 px-2 py-1 bg-gray-50 border-b border-gray-100 text-[10px] text-gray-400 font-semibold uppercase tracking-wide">
+        <div className="w-6 text-center">#</div>
+        <div className="flex-1 px-1">Jugador</div>
+        <div className="shrink-0 flex gap-1">
+          {group.kind === 'regular' && <div className="w-[22px] text-center">Hcp</div>}
+          {isEighteen && <><div className="w-[22px] text-center">Ida</div><div className="w-[22px] text-center">Vta</div></>}
+          <div className="w-[26px] text-center">Tot</div>
+          {group.kind === 'regular' && <div className="w-[26px] text-center">Neto</div>}
+        </div>
       </div>
 
       <div className="divide-y divide-gray-50">
