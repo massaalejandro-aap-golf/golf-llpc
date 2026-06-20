@@ -25,14 +25,14 @@ function Tarjeta({
   const frontGross = front.reduce((s, h) => s + (scoreMap.get(h.numero)?.golpes ?? 0), 0)
   const backGross  = isEighteen ? back.reduce((s, h) => s + (scoreMap.get(h.numero)?.golpes ?? 0), 0) : 0
 
-  function cellColor(golpes: number, par: number, chcp: number, si: number) {
-    const strokes = Math.floor(chcp / holes.length) + (si <= chcp % holes.length ? 1 : 0)
-    const neto = golpes - par - strokes
-    if (neto <= -2) return 'bg-yellow-300 text-yellow-900 font-bold'
-    if (neto === -1) return 'bg-red-500 text-white font-bold'
-    if (neto === 0)  return 'bg-white text-gray-900'
-    if (neto === 1)  return 'bg-blue-100 text-blue-900'
-    return 'bg-blue-200 text-blue-900 font-bold'
+  function cellColor(golpes: number, par: number) {
+    const diff = golpes - par
+    if (diff <= -2) return 'bg-yellow-300 text-yellow-900 font-bold'   // águila o mejor
+    if (diff === -1) return 'bg-red-500 text-white font-bold'           // birdie
+    if (diff === 0)  return 'bg-white text-gray-900'                    // par
+    if (diff === 1)  return 'bg-blue-100 text-blue-900'                 // bogey
+    if (diff === 2)  return 'bg-blue-300 text-blue-900 font-bold'       // doble bogey
+    return 'bg-blue-500 text-white font-bold'                           // peor
   }
 
   const HoleRow = ({ holeList }: { holeList: typeof holes }) => (
@@ -55,10 +55,7 @@ function Tarjeta({
               <td className="text-center px-1 py-1.5 text-gray-400">{h.si}</td>
               <td className="text-center px-2 py-1.5">
                 {hs ? (
-                  <span className={`inline-block w-7 h-7 leading-7 rounded-full text-center text-sm ${kind === 'regular'
-                    ? cellColor(hs.golpes, h.par, player.chcp, h.si)
-                    : hs.golpes < h.par ? 'bg-red-500 text-white font-bold' : hs.golpes === h.par ? 'bg-white text-gray-900' : 'bg-blue-100 text-blue-900'
-                  }`}>
+                  <span className={`inline-block w-7 h-7 leading-7 rounded-full text-center text-sm ${cellColor(hs.golpes, h.par)}`}>
                     {hs.golpes}
                   </span>
                 ) : (
