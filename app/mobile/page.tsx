@@ -7,12 +7,12 @@ import LogoutButton from './LogoutButton'
 export const dynamic = 'force-dynamic'
 
 const MENU_ITEMS = [
-  { href: '/mobile/tarjeta',     icon: '🃏', label: 'Carga online de tarjeta', color: 'bg-green-600 hover:bg-green-700 text-white' },
-  { href: '/mobile/handicap',    icon: '⛳', label: 'Handicap de juego',        color: 'bg-emerald-500 hover:bg-emerald-600 text-white' },
-  { href: '/mobile/leaderboard', icon: '🏆', label: 'Leaderboard',              color: 'bg-amber-400 hover:bg-amber-500 text-amber-900' },
-  { href: '/mobile/reservas',    icon: '📅', label: 'Reservas',                 color: 'bg-sky-400 hover:bg-sky-500 text-sky-900' },
-  { href: '/mobile/reglas',      icon: '📋', label: 'Reglas locales',           color: 'bg-violet-300 hover:bg-violet-400 text-violet-900' },
-  { href: '/mobile/mis-datos',   icon: '👤', label: 'Mis datos',                color: 'bg-slate-300 hover:bg-slate-400 text-slate-800' },
+  { href: '/mobile/tarjeta',     icon: '🃏', label: 'Carga online de tarjeta', color: 'bg-green-800 hover:bg-green-900 text-white' },
+  { href: '/mobile/handicap',    icon: '⛳', label: 'Handicap de juego',        color: 'bg-green-700 hover:bg-green-800 text-white' },
+  { href: '/mobile/leaderboard', icon: '🏆', label: 'Leaderboard',              color: 'bg-green-600 hover:bg-green-700 text-white' },
+  { href: '/mobile/reservas',    icon: '📅', label: 'Reservas',                 color: 'bg-green-500 hover:bg-green-600 text-white' },
+  { href: '/mobile/reglas',      icon: '📋', label: 'Reglas locales',           color: 'bg-green-400 hover:bg-green-500 text-green-900' },
+  { href: '/mobile/mis-datos',   icon: '👤', label: 'Mis datos',                color: 'bg-green-300 hover:bg-green-400 text-green-900' },
 ]
 
 export default async function MobilePage() {
