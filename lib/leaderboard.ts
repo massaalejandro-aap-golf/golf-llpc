@@ -10,6 +10,8 @@ import { TournamentType } from '@/app/generated/prisma/client'
 
 // ── Tipos exportados ──────────────────────────────────────────────────────────
 
+export type HoleScore = { numero: number; golpes: number; par: number; si: number }
+
 export type LeaderboardPlayer = {
   playerId:    number
   nombre:      string
@@ -23,6 +25,7 @@ export type LeaderboardPlayer = {
   stableford:  number | null
   holesPlayed: number
   totalHoles:  number
+  holeScores:  HoleScore[]
 }
 
 export type LeaderboardGroup = {
@@ -41,6 +44,7 @@ export type LeaderboardResponse = {
     fecha:  string
     tipo:   string
     hoyos:  string
+    holes:  { numero: number; par: number; si: number }[]
   }
   isEighteen:   boolean
   isStableford: boolean
@@ -62,14 +66,14 @@ function stablefordPts(gross: number, par: number, strokes: number): number {
   return Math.max(0, par + strokes + 2 - gross)
 }
 
-type HoleScore = { numero: number; golpes: number }
+type InternalHoleScore = { numero: number; golpes: number; par: number; si: number }
 
-function lastNNeto(hs: HoleScore[], n: number, chcp: number, divisor: number): number {
+function lastNNeto(hs: InternalHoleScore[], n: number, chcp: number, divisor: number): number {
   const last = hs.slice(-Math.min(n, hs.length))
   return last.reduce((s, h) => s + h.golpes, 0) - chcp / divisor
 }
 
-function lastNGross(hs: HoleScore[], n: number): number {
+function lastNGross(hs: InternalHoleScore[], n: number): number {
   const last = hs.slice(-Math.min(n, hs.length))
   return last.reduce((s, h) => s + h.golpes, 0)
 }
@@ -111,11 +115,11 @@ export async function computeLeaderboard(id: number): Promise<LeaderboardRespons
 
   // ── Calcular por tarjeta ────────────────────────────────────────────────────
 
-  type InternalResult = LeaderboardPlayer & {
+  type InternalResult = Omit<LeaderboardPlayer, 'holeScores'> & {
     genero:         string
     categoryName:   string
     categoryGenero: string
-    holeScores:     HoleScore[]
+    holeScores:     InternalHoleScore[]
   }
 
   const results: InternalResult[] = torneo.scorecards.map((sc) => {
@@ -138,7 +142,7 @@ export async function computeLeaderboard(id: number): Promise<LeaderboardRespons
       const strokes = strokesOnHole(chcp, hole.handicapIndex, totalHoles)
       if (hole.numero <= 9) ida += gross; else vuelta += gross
       holesPlayed++
-      holeScores.push({ numero: hole.numero, golpes: gross })
+      holeScores.push({ numero: hole.numero, golpes: gross, par: hole.par, si: hole.handicapIndex })
       stablefordTotal += stablefordPts(gross, hole.par, strokes)
     }
 
@@ -250,7 +254,7 @@ export async function computeLeaderboard(id: number): Promise<LeaderboardRespons
         genero:    item.genero,
         catNombre: item.catNombre,
         players:   item.players.map(
-          ({ holeScores: _hs, genero: _g, categoryName: _cn, categoryGenero: _cg, ...p }) => p
+          ({ genero: _g, categoryName: _cn, categoryGenero: _cg, ...p }) => p
         ),
       }
     }
@@ -261,7 +265,7 @@ export async function computeLeaderboard(id: number): Promise<LeaderboardRespons
       hcpDesde:  item.hcpDesde,
       hcpHasta:  item.hcpHasta,
       players:   item.group.map(
-        ({ holeScores: _hs, genero: _g, categoryName: _cn, categoryGenero: _cg, ...p }) => p
+        ({ genero: _g, categoryName: _cn, categoryGenero: _cg, ...p }) => p
       ),
     }
   })
@@ -273,6 +277,7 @@ export async function computeLeaderboard(id: number): Promise<LeaderboardRespons
       fecha:  torneo.fecha.toISOString(),
       tipo:   torneo.tipo,
       hoyos:  torneo.hoyos,
+      holes:  holes.map((h) => ({ numero: h.numero, par: h.par, si: h.handicapIndex })),
     },
     isEighteen,
     isStableford,
