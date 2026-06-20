@@ -47,7 +47,7 @@ function MatriculaInput({
             placeholder="Matrícula..."
             onChange={(e) => onChange(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && onBuscar()}
-            className="flex-1 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="flex-1 border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
           />
           <button
             onClick={onBuscar}
@@ -241,7 +241,7 @@ export default function ReservasTorneo({
           return (
             <div
               key={slot.id}
-              className={`grid grid-cols-[90px_1fr] border-t border-gray-100 ${esMiSlot ? 'bg-green-50' : ''}`}
+              className={`grid grid-cols-[90px_1fr] border-t border-gray-100 ${esMiSlot ? 'bg-green-100' : idx % 2 === 1 ? 'bg-green-50' : 'bg-white'}`}
             >
               {/* Columna izquierda */}
               <div className="px-2 py-3 flex flex-col items-center justify-center gap-1.5 border-r border-gray-100">
