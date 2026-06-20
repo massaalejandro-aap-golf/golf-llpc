@@ -89,7 +89,7 @@ export async function computeLeaderboard(id: number): Promise<LeaderboardRespons
       teeDama:   { select: { slope: true, rating: true } },
       categories:{ orderBy: [{ genero: 'asc' }, { nombre: 'asc' }] },
       scorecards: {
-        where: { ronda: 1 }, // ronda=2 son tarjetas de control YO, nunca van al leaderboard
+        where: { ronda: 1, onlineEstado: { in: ['COMPLETA', 'VALIDADA'] } }, // solo tarjetas enviadas al buzón
         include: {
           player: {
             select: { id: true, nombre: true, apellido: true, hcpIndex: true, genero: true },
