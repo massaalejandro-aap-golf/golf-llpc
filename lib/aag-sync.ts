@@ -40,6 +40,8 @@ export function fixName(s: string): string {
     .replace(/([a-záéíóúüñ])([A-ZÁÉÍÓÚÜÑ])/g, '$1 $2')
     .replace(/\s+/g, ' ')
     .trim()
+    .toLowerCase()
+    .replace(/(?:^|\s)\S/g, (c) => c.toUpperCase())
 }
 
 // ── Tipos ──────────────────────────────────────────────────────────────────

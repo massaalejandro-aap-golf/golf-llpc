@@ -2,6 +2,7 @@
  * POST /api/jugadores/normalizar-nombres
  *
  * Recorre todos los jugadores y aplica fixName() a nombre y apellido.
+ * Convierte a Title Case (primera letra mayúscula, resto minúsculas) y separa CamelCase.
  * Solo actualiza los registros donde el valor cambia.
  * Requiere rol ADMIN o COMISION.
  */

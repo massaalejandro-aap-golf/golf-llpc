@@ -161,7 +161,7 @@ export default function AagSyncClient({ initial }: { initial: SyncStatus }) {
           <div>
             <h2 className="text-base font-semibold text-gray-900">Corregir nombres</h2>
             <p className="text-xs text-gray-500 mt-1">
-              Inserta espacios en nombres importados sin separación (ej: <span className="font-mono">GabrielAntonio</span> → <span className="font-mono">Gabriel Antonio</span>).
+              Convierte todos los nombres a formato uniforme: primera letra mayúscula, resto minúsculas (ej: <span className="font-mono">GARCIA JUAN</span> → <span className="font-mono">Garcia Juan</span>).
             </p>
           </div>
           <button
