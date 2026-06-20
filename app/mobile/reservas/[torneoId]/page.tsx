@@ -39,7 +39,7 @@ export default async function MobileReservasTorneoPage({
               posicion: true,
               carro: true,
               reservedByUserId: true,
-              player: { select: { id: true, nombre: true, apellido: true, hcpIndex: true } },
+              player: { select: { id: true, nombre: true, apellido: true, hcpIndex: true, matricula: true } },
             },
           },
         },
