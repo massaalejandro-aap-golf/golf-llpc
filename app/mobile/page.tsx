@@ -1,8 +1,8 @@
 import { getSession } from '@/lib/session'
 import { redirect } from 'next/navigation'
 import Image from 'next/image'
-import Link from 'next/link'
 import LogoutButton from './LogoutButton'
+import MenuButton from './MenuButton'
 
 export const dynamic = 'force-dynamic'
 
@@ -33,15 +33,7 @@ export default async function MobilePage() {
       {/* Menú */}
       <div className="flex-1 px-4 py-6 space-y-3">
         {MENU_ITEMS.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={`flex items-center gap-4 w-full ${item.color} rounded-2xl px-5 py-4 shadow-sm active:scale-95 transition-transform`}
-          >
-            <span className="text-2xl">{item.icon}</span>
-            <span className="text-base font-semibold">{item.label}</span>
-            <span className="ml-auto opacity-50 text-lg">›</span>
-          </Link>
+          <MenuButton key={item.href} {...item} />
         ))}
 
         <LogoutButton />

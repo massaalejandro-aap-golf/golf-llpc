@@ -1,6 +1,6 @@
 import { requireSession } from '@/lib/session'
 import { prisma } from '@/lib/prisma'
-import Link from 'next/link'
+import NavLink from '@/components/NavLink'
 import HandicapBuscador from './HandicapBuscador'
 
 export const dynamic = 'force-dynamic'
@@ -63,12 +63,12 @@ export default async function HandicapPage() {
       </div>
 
       <div className="p-4">
-        <Link
+        <NavLink
           href="/mobile"
           className="flex items-center justify-center gap-2 w-full bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-2xl px-5 py-4 font-semibold active:scale-95 transition-transform"
         >
           ← Volver al menú
-        </Link>
+        </NavLink>
       </div>
     </div>
   )
