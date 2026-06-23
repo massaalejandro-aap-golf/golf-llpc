@@ -69,13 +69,6 @@ export default async function TarjetaOnlinePage(props: {
 
   return (
     <div className="max-w-lg mx-auto space-y-4">
-      {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-sm text-gray-500">
-        <Link href="/tarjeta-online" className="hover:text-green-700">Tarjeta Online</Link>
-        <span>/</span>
-        <span className="truncate text-gray-700">{torneo.nombre}</span>
-      </div>
-
       <TarjetaOnlineForm
         scorecardId={sc.id}
         yoScorecardId={scYo?.id ?? null}

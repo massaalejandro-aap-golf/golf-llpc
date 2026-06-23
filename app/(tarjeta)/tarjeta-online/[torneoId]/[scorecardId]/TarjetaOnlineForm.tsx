@@ -239,13 +239,23 @@ export default function TarjetaOnlineForm({
           )
         })}
 
-        {/* Total de IDA o VUELTA — solo en la columna derecha */}
+        {/* Total de IDA o VUELTA — mismo estilo que filas de hoyos */}
         {showTotal && (
-          <div className={`grid ${cols} border-t-2 border-green-600 bg-green-700 text-white text-sm font-bold text-center`}>
-            <div className="py-2 text-xs opacity-75">{vistaLabel.split('–')[0]}</div>
-            <div className="py-2 border-l border-green-600">{grossJugVista || '—'}</div>
+          <div className={`grid ${cols} border-t border-gray-200 items-center`}>
+            <div className="text-center py-1 text-[10px] font-medium text-gray-400">
+              {vista}
+            </div>
+            <div className="py-1 px-0.5 border-l border-gray-100">
+              <div className="border border-gray-200 rounded-lg text-center font-bold text-lg text-gray-900 py-1">
+                {grossJugVista || '—'}
+              </div>
+            </div>
             {marcador && (
-              <div className="py-2 border-l border-green-600">{grossYoVista || '—'}</div>
+              <div className="py-1 px-0.5 border-l border-gray-100">
+                <div className="border border-gray-200 rounded-lg text-center font-bold text-lg text-gray-900 py-1">
+                  {grossYoVista || '—'}
+                </div>
+              </div>
             )}
           </div>
         )}
