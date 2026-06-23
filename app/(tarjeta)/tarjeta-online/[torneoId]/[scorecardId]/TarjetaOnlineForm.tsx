@@ -182,7 +182,7 @@ export default function TarjetaOnlineForm({
   // ── Mini-tabla de una columna de hoyos ───────────────────────────────────
   const cols = marcador ? 'grid-cols-[26px_1fr_1fr]' : 'grid-cols-[26px_1fr]'
 
-  function MiniTabla({ holeSubset }: { holeSubset: Hole[] }) {
+  function MiniTabla({ holeSubset, showTotal }: { holeSubset: Hole[], showTotal?: boolean }) {
     const grossJug = totalGross(scoresJug, holeSubset)
     const grossYo  = totalGross(scoresYo, holeSubset)
     const hasInconsistency = holeSubset.some((h) => {
@@ -239,6 +239,16 @@ export default function TarjetaOnlineForm({
           )
         })}
 
+        {/* Total de IDA o VUELTA — solo en la columna derecha */}
+        {showTotal && (
+          <div className={`grid ${cols} border-t-2 border-green-600 bg-green-700 text-white text-sm font-bold text-center`}>
+            <div className="py-2 text-xs opacity-75">{vistaLabel.split('–')[0]}</div>
+            <div className="py-2 border-l border-green-600">{grossJugVista || '—'}</div>
+            {marcador && (
+              <div className="py-2 border-l border-green-600">{grossYoVista || '—'}</div>
+            )}
+          </div>
+        )}
       </div>
     )
   }
@@ -318,24 +328,7 @@ export default function TarjetaOnlineForm({
       {/* Grilla — 2 columnas de hoyos */}
       <div className="grid grid-cols-2 gap-2">
         <MiniTabla holeSubset={leftHoles} />
-        <MiniTabla holeSubset={rightHoles} />
-      </div>
-
-      {/* Total de la vista (IDA 1-9 / VUELTA 10-18) */}
-      <div className="bg-green-50 border border-green-200 rounded-xl px-4 py-2">
-        <div className={`grid ${marcador ? 'grid-cols-[1fr_auto_auto]' : 'grid-cols-[1fr_auto]'} items-center gap-4`}>
-          <span className="text-xs text-gray-500 font-medium">{vistaLabel}</span>
-          <div className="text-center">
-            <div className="text-[10px] text-gray-400 leading-tight">{jugador.apellido.substring(0,8).toUpperCase()}.</div>
-            <div className="text-lg font-bold text-green-800">{grossJugVista || '—'}</div>
-          </div>
-          {marcador && (
-            <div className="text-center">
-              <div className="text-[10px] text-gray-400 leading-tight">YO</div>
-              <div className="text-lg font-bold text-green-800">{grossYoVista || '—'}</div>
-            </div>
-          )}
-        </div>
+        <MiniTabla holeSubset={rightHoles} showTotal />
       </div>
 
       {/* Resumen compacto */}
