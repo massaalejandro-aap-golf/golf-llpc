@@ -331,7 +331,7 @@ export default function TarjetaOnlineForm({
         <MiniTabla holeSubset={rightHoles} showTotal />
       </div>
 
-      {/* Resumen compacto */}
+      {/* Resumen compacto — una línea por jugador */}
       {[
         {
           label: jugador.apellido.toUpperCase(),
@@ -351,19 +351,23 @@ export default function TarjetaOnlineForm({
         }] : []),
       ].map((row) => (
         <div key={row.label} className="bg-white rounded-xl border border-gray-100 shadow-sm px-3 py-2">
-          <div className="flex items-center gap-1 flex-wrap">
-            <span className="text-xs font-bold text-gray-700 mr-1">{row.label} – HCP {row.hcp}</span>
-            {[
-              { k: 'IDA',    v: row.ida },
-              ...(isEighteen ? [{ k: 'VUELTA', v: row.vuelta }] : []),
-              { k: 'GROSS',  v: row.gross },
-              { k: 'NETO',   v: row.neto },
-            ].map(({ k, v }) => (
-              <span key={k} className="inline-flex items-center gap-0.5 bg-gray-100 rounded-full px-2 py-0.5 text-xs">
-                <span className="text-gray-400">{k}</span>
-                <span className="font-bold text-gray-800">{v ?? '—'}</span>
-              </span>
-            ))}
+          <div className="flex items-center flex-nowrap overflow-hidden">
+            <span className="text-sm font-medium text-gray-900 whitespace-nowrap mr-2.5 shrink-0">
+              {row.label} – HCP {row.hcp}
+            </span>
+            <div className="flex gap-1.5 flex-1 justify-end">
+              {[
+                { k: 'IDA',    v: row.ida },
+                ...(isEighteen ? [{ k: 'VUELTA', v: row.vuelta }] : []),
+                { k: 'GROSS',  v: row.gross },
+                { k: 'NETO',   v: row.neto,  green: true },
+              ].map(({ k, v, green }) => (
+                <div key={k} className="text-center min-w-[32px]">
+                  <div className="text-[9px] text-gray-400 leading-tight">{k}</div>
+                  <div className={`text-lg font-medium leading-tight ${green ? 'text-green-800' : 'text-gray-900'}`}>{v ?? '—'}</div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       ))}
