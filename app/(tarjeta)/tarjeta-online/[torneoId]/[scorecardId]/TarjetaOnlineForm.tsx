@@ -104,6 +104,7 @@ export default function TarjetaOnlineForm({
   const [sending, setSending] = useState(false)
   const [savedMsg, setSavedMsg] = useState<string | null>(null)
   const [crossScores, setCrossScores] = useState<Record<number, number>>({})
+  const [confirming, setConfirming] = useState(false)
 
   useEffect(() => {
     if (estado === 'VALIDADA') return
@@ -149,11 +150,11 @@ export default function TarjetaOnlineForm({
     } finally { setSaving(false) }
   }
 
-  async function handleEnviar() {
-    if (!confirm('¿Enviar la tarjeta de ' + jugador.apellido + ' al leaderboard del torneo? Si confirmás ya no podrás modificarla.')) return
+  async function handleEnviarConfirmado() {
+    setConfirming(false)
     setSending(true)
     await fetch(`/api/tarjeta-online/${scorecardId}/enviar`, { method: 'POST' })
-    router.push('/tarjeta-online')
+    router.push('/')
   }
 
   function totalGross(scores: Record<number, number>, holeArr: Hole[]) {
@@ -393,12 +394,39 @@ export default function TarjetaOnlineForm({
             {saving ? 'Guardando...' : savedMsg ?? 'GUARDAR'}
           </button>
           <button
-            onClick={handleEnviar}
+            onClick={() => setConfirming(true)}
             disabled={sending}
             className="flex-1 bg-red-500 hover:bg-red-600 disabled:opacity-50 text-white font-bold py-4 rounded-xl text-lg transition-colors"
           >
             {sending ? 'Enviando...' : 'FINALIZAR TARJETA'}
           </button>
+        </div>
+      )}
+
+      {/* Modal de confirmación */}
+      {confirming && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-end">
+          <div className="bg-white w-full rounded-t-3xl p-6 space-y-4">
+            <h3 className="font-bold text-gray-900 text-lg">Finalizar tarjeta</h3>
+            <p className="text-sm text-gray-600">
+              ¿Enviar la tarjeta de <strong>{jugador.apellido}</strong> al leaderboard del torneo?
+              Si confirmás ya no podrás modificarla.
+            </p>
+            <div className="flex gap-3 pt-1">
+              <button
+                onClick={() => setConfirming(false)}
+                className="flex-1 py-3 rounded-2xl bg-gray-100 text-gray-700 font-semibold"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleEnviarConfirmado}
+                className="flex-1 py-3 rounded-2xl bg-red-500 text-white font-bold"
+              >
+                Confirmar
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
