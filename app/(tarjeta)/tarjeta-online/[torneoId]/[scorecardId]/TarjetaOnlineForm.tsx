@@ -150,7 +150,7 @@ export default function TarjetaOnlineForm({
   }
 
   async function handleEnviar() {
-    if (!confirm('¿Enviar la tarjeta de ' + jugador.apellido + ' al buzón? Ya no podrás modificarla.')) return
+    if (!confirm('¿Enviar la tarjeta de ' + jugador.apellido + ' al leaderboard del torneo? Si confirmás ya no podrás modificarla.')) return
     setSending(true)
     await fetch(`/api/tarjeta-online/${scorecardId}/enviar`, { method: 'POST' })
     router.push('/tarjeta-online')
@@ -239,14 +239,6 @@ export default function TarjetaOnlineForm({
           )
         })}
 
-        {/* Subtotal */}
-        <div className={`grid ${cols} border-t-2 border-gray-200 bg-gray-50 text-xs font-bold text-center`}>
-          <div className="py-1.5 text-gray-400 text-[10px]">tot</div>
-          <div className="py-1.5 border-l border-gray-200 text-green-800">{grossJug || '—'}</div>
-          {marcador && (
-            <div className="py-1.5 border-l border-gray-200 text-green-800">{grossYo || '—'}</div>
-          )}
-        </div>
       </div>
     )
   }
@@ -255,6 +247,13 @@ export default function TarjetaOnlineForm({
   const mid      = Math.ceil(holeList.length / 2)
   const leftHoles = holeList.slice(0, mid)
   const rightHoles = holeList.slice(mid)
+
+  // Total de la vista actual (IDA o VUELTA)
+  const grossJugVista = totalGross(scoresJug, holeList)
+  const grossYoVista  = totalGross(scoresYo,  holeList)
+  const vistaLabel    = vista === 'IDA'
+    ? `Hoyos 1–${holeList.length}`
+    : `Hoyos 10–${9 + holeList.length}`
 
   // Totales generales
   const grossJugTotal = totalGross(scoresJug, [...ida, ...vuelta])
@@ -318,6 +317,23 @@ export default function TarjetaOnlineForm({
         <MiniTabla holeSubset={rightHoles} />
       </div>
 
+      {/* Total de la vista (IDA 1-9 / VUELTA 10-18) */}
+      <div className="bg-green-50 border border-green-200 rounded-xl px-4 py-2">
+        <div className={`grid ${marcador ? 'grid-cols-[1fr_auto_auto]' : 'grid-cols-[1fr_auto]'} items-center gap-4`}>
+          <span className="text-xs text-gray-500 font-medium">{vistaLabel}</span>
+          <div className="text-center">
+            <div className="text-[10px] text-gray-400 leading-tight">{jugador.apellido.substring(0,8).toUpperCase()}.</div>
+            <div className="text-lg font-bold text-green-800">{grossJugVista || '—'}</div>
+          </div>
+          {marcador && (
+            <div className="text-center">
+              <div className="text-[10px] text-gray-400 leading-tight">YO</div>
+              <div className="text-lg font-bold text-green-800">{grossYoVista || '—'}</div>
+            </div>
+          )}
+        </div>
+      </div>
+
       {/* Resumen total */}
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-3">
         <div className={`grid ${marcador ? 'grid-cols-2' : 'grid-cols-1'} gap-3 text-center text-sm`}>
@@ -355,7 +371,7 @@ export default function TarjetaOnlineForm({
             disabled={sending}
             className="flex-1 bg-red-500 hover:bg-red-600 disabled:opacity-50 text-white font-bold py-4 rounded-xl text-lg transition-colors"
           >
-            {sending ? 'Enviando...' : 'ENVIAR AL BUZÓN'}
+            {sending ? 'Enviando...' : 'FINALIZAR TARJETA'}
           </button>
         </div>
       )}
