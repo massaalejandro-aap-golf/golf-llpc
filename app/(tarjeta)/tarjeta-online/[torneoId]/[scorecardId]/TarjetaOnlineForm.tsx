@@ -256,8 +256,12 @@ export default function TarjetaOnlineForm({
     : `Hoyos 10–${9 + holeList.length}`
 
   // Totales generales
-  const grossJugTotal = totalGross(scoresJug, [...ida, ...vuelta])
-  const grossYoTotal  = totalGross(scoresYo,  [...ida, ...vuelta])
+  const idaJug     = totalGross(scoresJug, ida)
+  const vueltaJug  = isEighteen ? totalGross(scoresJug, vuelta) : null
+  const grossJugTotal = idaJug + (vueltaJug ?? 0) || 0
+  const idaYo      = marcador ? totalGross(scoresYo, ida) : 0
+  const vueltaYo   = marcador && isEighteen ? totalGross(scoresYo, vuelta) : null
+  const grossYoTotal  = idaYo + (vueltaYo ?? 0) || 0
   const netJug = grossJugTotal ? grossJugTotal - chpJug : null
   const netYo  = grossYoTotal  ? grossYoTotal  - chpYo  : null
 
@@ -334,27 +338,42 @@ export default function TarjetaOnlineForm({
         </div>
       </div>
 
-      {/* Resumen total */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-3">
-        <div className={`grid ${marcador ? 'grid-cols-2' : 'grid-cols-1'} gap-3 text-center text-sm`}>
-          <div>
-            <p className="text-xs text-gray-400 mb-1">{jugador.apellido.toUpperCase()} · HCP {chpJug}</p>
-            <p className="font-bold text-gray-900">
-              Gross: {grossJugTotal || '—'}
-              {netJug !== null && <span className="ml-2 text-green-700">Net: {netJug}</span>}
-            </p>
+      {/* Resumen compacto */}
+      {[
+        {
+          label: jugador.apellido.toUpperCase(),
+          hcp: chpJug,
+          ida: idaJug || null,
+          vuelta: vueltaJug || null,
+          gross: grossJugTotal || null,
+          neto: netJug,
+        },
+        ...(marcador ? [{
+          label: 'YO',
+          hcp: chpYo,
+          ida: idaYo || null,
+          vuelta: vueltaYo || null,
+          gross: grossYoTotal || null,
+          neto: netYo,
+        }] : []),
+      ].map((row) => (
+        <div key={row.label} className="bg-white rounded-xl border border-gray-100 shadow-sm px-3 py-2">
+          <div className="flex items-center gap-1 flex-wrap">
+            <span className="text-xs font-bold text-gray-700 mr-1">{row.label} – HCP {row.hcp}</span>
+            {[
+              { k: 'IDA',    v: row.ida },
+              ...(isEighteen ? [{ k: 'VUELTA', v: row.vuelta }] : []),
+              { k: 'GROSS',  v: row.gross },
+              { k: 'NETO',   v: row.neto },
+            ].map(({ k, v }) => (
+              <span key={k} className="inline-flex items-center gap-0.5 bg-gray-100 rounded-full px-2 py-0.5 text-xs">
+                <span className="text-gray-400">{k}</span>
+                <span className="font-bold text-gray-800">{v ?? '—'}</span>
+              </span>
+            ))}
           </div>
-          {marcador && (
-            <div>
-              <p className="text-xs text-gray-400 mb-1">YO · HCP {chpYo}</p>
-              <p className="font-bold text-gray-900">
-                Gross: {grossYoTotal || '—'}
-                {netYo !== null && <span className="ml-2 text-green-700">Net: {netYo}</span>}
-              </p>
-            </div>
-          )}
         </div>
-      </div>
+      ))}
 
       {/* Acciones */}
       {canEdit && (
