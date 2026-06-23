@@ -243,7 +243,7 @@ export default function TarjetaOnlineForm({
         {showTotal && (
           <div className={`grid ${cols} border-t border-gray-200 items-center`}>
             <div className="text-center py-1 text-[10px] font-medium text-gray-400">
-              {vista}
+              {vista === 'VUELTA' ? 'VTA' : vista}
             </div>
             <div className="py-1 px-0.5 border-l border-gray-100">
               <div className="border border-gray-200 rounded-lg text-center font-bold text-lg text-gray-900 py-1">
