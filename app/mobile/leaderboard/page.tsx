@@ -1,6 +1,6 @@
 import { requireSession } from '@/lib/session'
 import { prisma } from '@/lib/prisma'
-import NavLink from '@/components/NavLink'
+import Link from 'next/link'
 
 export const dynamic = 'force-dynamic'
 
@@ -42,7 +42,7 @@ export default async function MobileLeaderboardPage() {
           </div>
         ) : (
           torneos.map((t) => (
-            <NavLink
+            <Link
               key={t.id}
               href={`/mobile/leaderboard/${t.id}`}
               className="flex items-center gap-3 bg-white border border-gray-100 rounded-2xl px-4 py-4 shadow-sm active:scale-95 transition-transform"
@@ -58,18 +58,18 @@ export default async function MobileLeaderboardPage() {
                 <span className="text-xs text-gray-400">{t._count.results} res.</span>
                 <span className="block text-gray-300 text-lg">›</span>
               </div>
-            </NavLink>
+            </Link>
           ))
         )}
       </div>
 
       <div className="p-4">
-        <NavLink
+        <Link
           href="/mobile"
           className="flex items-center justify-center gap-2 w-full bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-2xl px-5 py-4 font-semibold active:scale-95 transition-transform"
         >
           ← Volver al menú
-        </NavLink>
+        </Link>
       </div>
     </div>
   )

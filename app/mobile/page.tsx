@@ -36,7 +36,7 @@ export default async function MobilePage() {
           <Link
             key={item.href}
             href={item.href}
-            className={`flex items-center gap-4 w-full ${item.color} rounded-2xl px-5 py-4 shadow-sm active:scale-95 active:opacity-60 transition-all`}
+            className={`flex items-center gap-4 w-full ${item.color} rounded-2xl px-5 py-4 shadow-sm active:scale-95 transition-transform`}
           >
             <span className="text-2xl">{item.icon}</span>
             <span className="text-base font-semibold">{item.label}</span>
